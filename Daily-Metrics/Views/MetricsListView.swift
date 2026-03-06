@@ -11,9 +11,16 @@ import SwiftUI
 
 struct MetricsListView: View {
     
-    @Environment(\.colorScheme) var colorScheme
+    // Show add metrics sheet
     @State private var showAddMetricsSheet = false
+    
+    // Show global history sheet.
+    @State private var showGlobalHistorySheet = false
+    
+    
     @Query(sort: \Metric.value, order: .reverse)
+    
+    // List of metrics created.
     private var metrics: [Metric]
     
     var body: some View {
@@ -35,6 +42,9 @@ struct MetricsListView: View {
                 .sheet(isPresented: $showAddMetricsSheet) {
                     AddMetricsView()
                 }
+                .fullScreenCover(isPresented: $showGlobalHistorySheet) {
+                    GlobalHistoryView()
+                }
         }
     }
     
@@ -54,7 +64,7 @@ struct MetricsListView: View {
     
     private var historyButton: some View {
         Button {
-          
+            showGlobalHistorySheet = true
         } label: {
             Image(systemName: "clock")
         }

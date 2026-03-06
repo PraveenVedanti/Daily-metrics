@@ -36,10 +36,10 @@ public struct MetricCard: View {
             
             // Stepper Section
             StepperView(buttonHeight: 40) {
-                metric.value += 1
+                metric.increment(in: modelContext)
                 updateMetric()
             } onMinusTap: {
-                metric.value -= 1
+                metric.decrement(in: modelContext)
                 updateMetric()
             }
         }

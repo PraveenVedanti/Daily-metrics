@@ -15,6 +15,6 @@ struct Daily_MetricsApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: Metric.self)
+        .modelContainer(ModelContainer.appContainer)
     }
 }

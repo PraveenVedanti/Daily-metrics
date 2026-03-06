@@ -30,31 +30,41 @@ struct AddMetricsView: View {
     var body: some View {
         NavigationStack {
             List {
+                
+                // Counter name section
                 Section {
                     metricNameTextField
                     metricDescriptionTextField
                     metricUnitTextField
                 }
                 
+                // Initial value section
                 Section {
                     initialValueTextField
                 } header: {
-                    Text("Initial value")
+                    Text(LocalizedStrings.initialValueTextFiledHeader)
                 } footer: {
-                    Text("Enter initial value of counter here")
+                    Text(LocalizedStrings.initialValueTextFieldFooter)
                 }
 
+                // Increment by section
                 Section {
                     incrementByTextField
                 } header: {
                     Text("Increment by")
                 } footer: {
-                    Text("Enter the value for which counter has to incremented for each tap")
+                    Text("Enter the amount the counter should increase per tap (default is 1)")
                 }
                 
-                Section("Color") {
+                // Color selection section.
+                Section {
                     ColorPickerView(selectedColor: $metricColor)
+                } header: {
+                    Text("Color")
+                } footer: {
+                    Text("Choose a color for your counter")
                 }
+                
             }.onTapGesture {
                 isTextFieldFocused = false
             }
@@ -188,4 +198,9 @@ struct ColorPickerView: View {
         }
         .padding(.horizontal)
     }
+}
+
+struct LocalizedStrings {
+    static let initialValueTextFiledHeader = NSLocalizedString("Initial value", comment: "Initial value text field header")
+    static let initialValueTextFieldFooter = NSLocalizedString("Enter initial value (default is 0)", comment: "Initial value text field footer")
 }
