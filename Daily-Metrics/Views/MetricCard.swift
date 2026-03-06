@@ -62,10 +62,29 @@ public struct MetricCard: View {
         }
     }
     
+    func color(from string: String) -> Color {
+        switch string.lowercased() {
+        case "red":
+            return .red
+        case "green":
+            return .green
+        case "yellow":
+            return .yellow
+        case "blue":
+            return .blue
+        case "orange":
+            return .orange
+        case "brown":
+            return .brown
+        default:
+            return .blue
+        }
+    }
+    
     private var metricTitleView: some View {
         Text(metric.name.uppercased())
             .font(.caption2.bold())
-            .foregroundStyle(.secondary)
+            .foregroundStyle(color(from: metric.color ?? "blue"))
     }
     
     private var metricValueView: some View {

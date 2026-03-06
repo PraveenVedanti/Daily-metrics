@@ -15,8 +15,9 @@ struct AddMetricsView: View {
     @State private var metricDescription: String = ""
     @State private var metricUnit: String = ""
     
-    @State private var initialValue: String = ""
-    @State private var incrementBy: String = ""
+    @State private var initialValue: String = "0"
+    @State private var incrementBy: String = "1"
+    @State private var metricColor: Color = .blue
     
     @Environment(\.modelContext) private var modelContext
     
@@ -35,16 +36,24 @@ struct AddMetricsView: View {
                     metricUnitTextField
                 }
                 
-                Section("Initial value") {
-                   initialValueTextField
+                Section {
+                    initialValueTextField
+                } header: {
+                    Text("Initial value")
+                } footer: {
+                    Text("Enter initial value of counter here")
                 }
 
-                Section("Increment by") {
+                Section {
                     incrementByTextField
+                } header: {
+                    Text("Increment by")
+                } footer: {
+                    Text("Enter the value for which counter has to incremented for each tap")
                 }
                 
                 Section("Color") {
-                    ColorPickerView()
+                    ColorPickerView(selectedColor: $metricColor)
                 }
             }.onTapGesture {
                 isTextFieldFocused = false
@@ -78,7 +87,14 @@ struct AddMetricsView: View {
                             return
                         }
                         
-                        let newMetric = Metric(name: metricName, desc: metricDescription, unit: metricUnit, value: initialValueInt, increment: incrementByInt, color: "BLUE")
+                        let newMetric = Metric(
+                            name: metricName,
+                            desc: metricDescription,
+                            unit: metricUnit,
+                            value: initialValueInt,
+                            increment: incrementByInt,
+                            color: colorsToString(metricColor)
+                        )
                         modelContext.insert(newMetric)
                         
                         do {
@@ -112,28 +128,48 @@ struct AddMetricsView: View {
     }
     
     private var initialValueTextField: some View {
-        TextField("Enter initial value for this counter", text: $initialValue)
+        TextField("0", text: $initialValue)
             .keyboardType(.numberPad)
     }
     
     private var incrementByTextField: some View {
-        TextField("Enter teh value to increment this counter for every tap", text: $incrementBy)
+        TextField("1", text: $incrementBy)
             .keyboardType(.numberPad)
+    }
+    
+    private func colorsToString(_ color: Color) -> String {
+        switch color {
+        case .red:
+            return "red"
+        case .green:
+            return "green"
+        case .yellow:
+            return "yellow"
+        case .blue:
+            return "blue"
+        case .orange:
+            return "orange"
+        case .brown:
+            return "brown"
+        default:
+            return "blue"
+        }
     }
 }
 
 
 struct ColorPickerView: View {
     
+    // List of colors available to choose from
     let colors: [Color] = [.red, .green, .yellow, .blue, .orange, .brown]
-    @State private var selectedColor: Color? = nil
-    @StateObject private var viewModel = MetricsViewModel()
+    
+    // Binding variable for selected color.
+    @Binding var selectedColor: Color
 
     var body: some View {
         HStack(spacing: 16) {
             ForEach(colors, id: \.self) { color in
                 Button(action: {
-                    viewModel.updateColor(color)
                     selectedColor = color
                 }) {
                     Circle()
