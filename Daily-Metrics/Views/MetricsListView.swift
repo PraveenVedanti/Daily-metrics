@@ -13,6 +13,8 @@ struct MetricsListView: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var showAddMetricsSheet = false
     
+    @State private var initialValue: Int = 25
+    
     var body: some View {
         NavigationStack {
             ZStack {

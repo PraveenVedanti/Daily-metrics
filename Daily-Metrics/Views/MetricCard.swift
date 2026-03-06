@@ -27,7 +27,7 @@ public struct MetricCard: View {
     public var body: some View {
         HStack(alignment: .center) {
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 8) {
                 metricTitleView
                 metricValueView
             }
@@ -36,19 +36,17 @@ public struct MetricCard: View {
                 .frame(height: 12)
             
             // Stepper Section
-            HStack(spacing: 15) {
-                // Decrement counter
-                decrementButton
-                
-                // Increment counter
-                incrementButton
+            StepperView {
+                metricValue += 1
+            } onMinusTap: {
+                metricValue -= 1
             }
         }
         .padding(.vertical, 16)
         .padding(.horizontal, 20)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 4)
+        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
     }
     
     private var metricTitleView: some View {
@@ -61,35 +59,10 @@ public struct MetricCard: View {
         HStack(alignment: .firstTextBaseline, spacing: 4) {
             Text("\(metricValue)")
                 .font(.system(size: 34, weight: .bold, design: .rounded))
+                .contentTransition(.numericText())
             Text(metricUnit)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-        }
-    }
-    
-    private var incrementButton: some View {
-        Button {
-            metricValue += 1
-        } label: {
-            Image(systemName: "plus")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color.teal)
-                .frame(width: 38, height: 38)
-                .background(Color.teal.opacity(0.1))
-                .clipShape(Circle())
-        }
-    }
-    
-    private var decrementButton: some View {
-        Button {
-            metricValue -= 1
-        } label: {
-            Image(systemName: "minus")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color.orange)
-                .frame(width: 38, height: 38)
-                .background(Color.orange.opacity(0.1))
-                .clipShape(Circle())
         }
     }
 }
