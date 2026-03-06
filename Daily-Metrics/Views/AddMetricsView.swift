@@ -16,6 +16,8 @@ struct AddMetricsView: View {
     @State private var initialValue: Int = 0
     @State private var incrementBy: Int = 1
     
+    @AppStorage("selectedThemeColorName") var selectedThemeColorName: String = "Red"
+    
     @FocusState private var isTextFieldFocused: Bool
     
     @Environment(\.dismiss) var dismiss
@@ -39,11 +41,15 @@ struct AddMetricsView: View {
                         value: $incrementBy, title: "Increment by"
                     )
                 }
+                
+                Section {
+                    colorSelectionView
+                }
+            }.onTapGesture {
+                isTextFieldFocused = false
             }
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    isTextFieldFocused = true
-                }
+                isTextFieldFocused = true
             }
             .navigationTitle("New Counter")
             .navigationBarTitleDisplayMode(.inline)
@@ -70,13 +76,22 @@ struct AddMetricsView: View {
         }
     }
     
+    private var colorSelectionView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Color")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            ColorPickerView()
+        }
+    }
+    
     private var metricNameTextField: some View {
         TextField("Counter name (Required)", text: $metricName)
             .focused($isTextFieldFocused)
     }
     
     private var metricDescriptionTextField: some View {
-        TextField("Counter description", text: $metricDescription)
+        TextField("what are you tracking?(Optional)", text: $metricDescription)
     }
 }
 
@@ -127,5 +142,37 @@ struct CounterStepperRow: View {
                 .buttonStyle(.plain)
             }
         }
+    }
+}
+
+
+struct ColorPickerView: View {
+    
+    let colors: [Color] = [.red, .green, .yellow, .blue, .orange, .brown]
+    @State private var selectedColor: Color? = nil
+    @StateObject private var viewModel = MetricsViewModel()
+
+    var body: some View {
+        HStack(spacing: 16) {
+            ForEach(colors, id: \.self) { color in
+                Button(action: {
+                    viewModel.updateColor(color)
+                    selectedColor = color
+                }) {
+                    Circle()
+                        .fill(color.opacity(0.8))
+                        .frame(width: 36, height: 36)
+                        .overlay(
+                            Circle()
+                                .stroke(color.opacity(0.4), lineWidth: 2)
+                                .padding(-6)
+                                .opacity(selectedColor == color ? 1 : 0)
+                        )
+                }
+                .buttonStyle(.plain)
+                .animation(.spring(), value: selectedColor)
+            }
+        }
+        .padding()
     }
 }
