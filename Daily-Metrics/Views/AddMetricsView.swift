@@ -7,18 +7,22 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 struct AddMetricsView: View {
     
     @State private var metricName: String = ""
     @State private var metricDescription: String = ""
+    @State private var metricUnit: String = ""
     
-    @State private var initialValue: Int = 0
-    @State private var incrementBy: Int = 1
+    @State private var initialValue: String = ""
+    @State private var incrementBy: String = ""
     
-    @AppStorage("selectedThemeColorName") var selectedThemeColorName: String = "Red"
+    @Environment(\.modelContext) private var modelContext
     
     @FocusState private var isTextFieldFocused: Bool
+    
+    @StateObject private var viewModel = MetricsViewModel()
     
     @Environment(\.dismiss) var dismiss
     
@@ -28,22 +32,19 @@ struct AddMetricsView: View {
                 Section {
                     metricNameTextField
                     metricDescriptionTextField
+                    metricUnitTextField
                 }
                 
-                Section {
-                    CounterStepperRow(
-                        value: $initialValue, title: "Initial value"
-                    )
+                Section("Initial value") {
+                   initialValueTextField
                 }
 
-                Section {
-                    CounterStepperRow(
-                        value: $incrementBy, title: "Increment by"
-                    )
+                Section("Increment by") {
+                    incrementByTextField
                 }
                 
-                Section {
-                    colorSelectionView
+                Section("Color") {
+                    ColorPickerView()
                 }
             }.onTapGesture {
                 isTextFieldFocused = false
@@ -65,7 +66,28 @@ struct AddMetricsView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        dismiss()
+                      
+                        guard let initialValueInt = Int(initialValue) else {
+                            print("Initial value return")
+                            dismiss()
+                            return
+                        }
+                        guard let incrementByInt = Int(incrementBy) else {
+                            print("incrementBy value return")
+                            dismiss()
+                            return
+                        }
+                        
+                        let newMetric = Metric(name: metricName, desc: metricDescription, unit: metricUnit, value: initialValueInt, increment: incrementByInt, color: "BLUE")
+                        modelContext.insert(newMetric)
+                        
+                        do {
+                            try modelContext.save()
+                            dismiss()
+                        } catch {
+                            print("Failed to save context: \(error)")
+                            dismiss()
+                        }
                     } label: {
                         Image(systemName: "checkmark")
                     }
@@ -73,15 +95,6 @@ struct AddMetricsView: View {
                     .disabled(metricName.isEmpty)
                 }
             }
-        }
-    }
-    
-    private var colorSelectionView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Color")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            ColorPickerView()
         }
     }
     
@@ -93,55 +106,19 @@ struct AddMetricsView: View {
     private var metricDescriptionTextField: some View {
         TextField("what are you tracking?(Optional)", text: $metricDescription)
     }
-}
-
-
-struct CounterStepperRow: View {
     
-    @Binding var value: Int
+    private var metricUnitTextField: some View {
+        TextField("Unit (Optional)", text: $metricUnit)
+    }
     
-    let title: String
-    var step: Int = 1
+    private var initialValueTextField: some View {
+        TextField("Enter initial value for this counter", text: $initialValue)
+            .keyboardType(.numberPad)
+    }
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                
-            HStack(spacing: 24) {
-                Button {
-                    if value >= step {
-                        value -= step
-                    }
-                } label: {
-                    Image(systemName: "minus")
-                        .font(.system(size: 16, weight: .regular))
-                        .frame(width: 32, height: 32)
-                        .background(Color.orange.opacity(0.15))
-                        .clipShape(Circle())
-                }
-                .buttonStyle(.plain)
-                
-                Spacer()
-                
-                Text("\(value)")
-                    .font(.system(size: 34, weight: .regular, design: .rounded))
-                
-                Spacer()
-                
-                Button {
-                    value += step
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.system(size: 16, weight: .regular))
-                        .frame(width: 32, height: 32)
-                        .background(Color.blue.opacity(0.15))
-                        .clipShape(Circle())
-                }
-                .buttonStyle(.plain)
-            }
-        }
+    private var incrementByTextField: some View {
+        TextField("Enter teh value to increment this counter for every tap", text: $incrementBy)
+            .keyboardType(.numberPad)
     }
 }
 
@@ -173,6 +150,6 @@ struct ColorPickerView: View {
                 .animation(.spring(), value: selectedColor)
             }
         }
-        .padding()
+        .padding(.horizontal)
     }
 }

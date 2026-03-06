@@ -7,21 +7,20 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 public struct MetricCard: View {
     
-    @State private var metricTitle: String
-    @State private var metricValue: Int
-    @State private var metricUnit: String
+    let metric: Metric
     
-    public init(
-        metricTitle: String,
-        metricValue: Int,
-        metricUnit: String
+    @StateObject private var viewModel = MetricsViewModel()
+    
+    @Environment(\.modelContext) private var modelContext
+    
+    init(
+        metric: Metric,
     ) {
-        self.metricTitle = metricTitle
-        self.metricValue = metricValue
-        self.metricUnit = metricUnit
+        self.metric = metric
     }
     
     public var body: some View {
@@ -36,12 +35,18 @@ public struct MetricCard: View {
                 .frame(height: 12)
             
             // Stepper Section
-            StepperView {
-                metricValue += 1
+            StepperView(buttonHeight: 40) {
+                metric.value += 1
+                updateMetric()
             } onMinusTap: {
-                metricValue -= 1
+                metric.value -= 1
+                updateMetric()
             }
         }
+        .onAppear(perform: {
+            print(viewModel.selectedColorName)
+            print(viewModel.selectedColor)
+        })
         .padding(.vertical, 16)
         .padding(.horizontal, 20)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
@@ -49,18 +54,26 @@ public struct MetricCard: View {
         .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
     }
     
+    private func updateMetric() {
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to update: \(error)")
+        }
+    }
+    
     private var metricTitleView: some View {
-        Text(metricTitle.uppercased())
+        Text(metric.name.uppercased())
             .font(.caption2.bold())
             .foregroundStyle(.secondary)
     }
     
     private var metricValueView: some View {
         HStack(alignment: .firstTextBaseline, spacing: 4) {
-            Text("\(metricValue)")
+            Text("\(metric.value)")
                 .font(.system(size: 34, weight: .bold, design: .rounded))
                 .contentTransition(.numericText())
-            Text(metricUnit)
+            Text(metric.unit ?? "")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }

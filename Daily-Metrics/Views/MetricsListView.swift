@@ -6,40 +6,65 @@
 //
 
 import Foundation
+import SwiftData
 import SwiftUI
 
 struct MetricsListView: View {
     
     @Environment(\.colorScheme) var colorScheme
     @State private var showAddMetricsSheet = false
-    
-    @State private var initialValue: Int = 25
+    @Query(sort: \Metric.value, order: .reverse)
+    private var metrics: [Metric]
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea()
-                
-                ScrollView {
-                    VStack(spacing: 16) {
-                        MetricCard(metricTitle: "Reading", metricValue: 25, metricUnit: "pages")
-                        MetricCard(metricTitle: "Reading", metricValue: 2, metricUnit: "pages")
-                        MetricCard(metricTitle: "Reading", metricValue: 25, metricUnit: "pages")
-                        MetricCard(metricTitle: "Reading", metricValue: 25, metricUnit: "pages")
-                    }
-                    .padding()
-                }
-            }
-            .navigationTitle("Counters")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+            listContent
+                .navigationTitle("Counters")
+                .overlay(alignment: .bottomTrailing) {
                     addMetricsButton
                 }
-            }
-            .sheet(isPresented: $showAddMetricsSheet) {
-                AddMetricsView()
-            }
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        HStack(spacing: 24) {
+                            historyButton
+                            settingsButton
+                        }
+                        .padding(8)
+                    }
+                }
+                .sheet(isPresented: $showAddMetricsSheet) {
+                    AddMetricsView()
+                }
+        }
+    }
+    
+    private var listContent: some View {
+        List(metrics) { metric in
+            MetricCard(metric: metric)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color(uiColor: .systemGroupedBackground))
+        }
+        .listRowSpacing(16)
+        .scrollContentBackground(.hidden)
+        .listRowSeparator(.hidden)
+        .buttonStyle(.borderless)
+        .background(Color(uiColor: .systemGroupedBackground))
+    }
+    
+    private var historyButton: some View {
+        Button {
+          
+        } label: {
+            Image(systemName: "clock")
+        }
+    }
+    
+    private var settingsButton: some View {
+        Button {
+            
+        } label: {
+            Image(systemName: "gear")
         }
     }
     
@@ -48,7 +73,26 @@ struct MetricsListView: View {
             showAddMetricsSheet.toggle()
         } label: {
             Image(systemName: "plus")
-                .font(.system(size: 20, weight: .semibold))
+                .font(.system(size: 24, weight: .medium))
+                .foregroundColor(.white)
+                .padding(16)
+                .background(
+                    Circle()
+                        .fill(Color.blue.opacity(0.6))
+                        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
+                )
         }
+        .background(.ultraThinMaterial)
+        .clipShape(Circle())
+        .padding()
+        .buttonStyle(PressedScaleButtonStyle())
+    }
+}
+
+struct PressedScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 1.2 : 1.0)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }

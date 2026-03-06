@@ -12,11 +12,14 @@ struct StepperView: View {
     
     let onPlusTap: () -> Void
     let onMinusTap: () -> Void
+    let buttonHeight: CGFloat
     
     init(
+        buttonHeight: CGFloat,
         onPlusTap: @escaping () -> Void,
         onMinusTap: @escaping () -> Void
     ) {
+        self.buttonHeight = buttonHeight
         self.onPlusTap = onPlusTap
         self.onMinusTap = onMinusTap
     }
@@ -35,9 +38,9 @@ struct StepperView: View {
         } label: {
             Image(systemName: "plus")
                 .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color.blue)
-                .frame(width: 40, height: 40)
-                .background(Color.blue.opacity(0.12))
+                .foregroundStyle(Color.teal)
+                .frame(width: buttonHeight, height: buttonHeight)
+                .background(Color.teal.opacity(0.12))
                 .clipShape(Circle())
         }
     }
@@ -49,7 +52,7 @@ struct StepperView: View {
             Image(systemName: "minus")
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(Color.orange)
-                .frame(width: 40, height: 40)
+                .frame(width: buttonHeight, height: buttonHeight)
                 .background(Color.orange.opacity(0.12))
                 .clipShape(Circle())
         }
