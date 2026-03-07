@@ -27,14 +27,12 @@ struct MetricsListView: View {
         NavigationStack {
             listContent
                 .navigationTitle("Counters")
-                .overlay(alignment: .bottomTrailing) {
-                    addMetricsButton
-                }
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         HStack(spacing: 24) {
                             historyButton
                             settingsButton
+                            addMetricsButton
                         }
                         .padding(8)
                     }
@@ -83,19 +81,7 @@ struct MetricsListView: View {
             showAddMetricsSheet.toggle()
         } label: {
             Image(systemName: "plus")
-                .font(.system(size: 24, weight: .medium))
-                .foregroundColor(.white)
-                .padding(16)
-                .background(
-                    Circle()
-                        .fill(Color.blue.opacity(0.6))
-                        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
-                )
         }
-        .background(.ultraThinMaterial)
-        .clipShape(Circle())
-        .padding()
-        .buttonStyle(PressedScaleButtonStyle())
     }
 }
 

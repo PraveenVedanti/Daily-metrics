@@ -27,6 +27,9 @@ struct AddMetricsView: View {
     
     @Environment(\.dismiss) var dismiss
     
+    @State private var firstSetColors: [Color] = [.blue, .green, .yellow, .red, .orange, .brown]
+    @State private var secondSetColors: [Color] = [.cyan, .teal, .purple, .indigo, .mint, .pink]
+    
     var body: some View {
         NavigationStack {
             List {
@@ -58,7 +61,10 @@ struct AddMetricsView: View {
                 
                 // Color selection section.
                 Section {
-                    ColorPickerView(selectedColor: $metricColor)
+                    VStack(spacing: 24) {
+                        ColorPickerView(colors: firstSetColors, selectedColor: $metricColor)
+                        ColorPickerView(colors: secondSetColors, selectedColor: $metricColor)
+                    }
                 } header: {
                     Text("Color")
                 } footer: {
@@ -161,6 +167,19 @@ struct AddMetricsView: View {
             return "orange"
         case .brown:
             return "brown"
+        case .purple:
+            return "purple"
+        case .cyan:
+            return "cyan"
+        case .teal:
+            return "teal"
+        case .indigo:
+            return "indigo"
+        case .mint:
+            return "mint"
+        case .pink:
+            return "pink"
+            
         default:
             return "blue"
         }
@@ -171,7 +190,7 @@ struct AddMetricsView: View {
 struct ColorPickerView: View {
     
     // List of colors available to choose from
-    let colors: [Color] = [.red, .green, .yellow, .blue, .orange, .brown]
+    let colors: [Color]
     
     // Binding variable for selected color.
     @Binding var selectedColor: Color

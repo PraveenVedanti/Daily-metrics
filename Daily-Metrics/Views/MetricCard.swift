@@ -35,7 +35,10 @@ public struct MetricCard: View {
                 .frame(height: 12)
             
             // Stepper Section
-            StepperView(buttonHeight: 40) {
+            StepperView(
+                buttonHeight: 40,
+                color: color(from: metric.color ?? "blue")
+            ) {
                 metric.increment(in: modelContext)
                 updateMetric()
             } onMinusTap: {
@@ -43,10 +46,6 @@ public struct MetricCard: View {
                 updateMetric()
             }
         }
-        .onAppear(perform: {
-            print(viewModel.selectedColorName)
-            print(viewModel.selectedColor)
-        })
         .padding(.vertical, 16)
         .padding(.horizontal, 20)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
@@ -76,10 +75,23 @@ public struct MetricCard: View {
             return .orange
         case "brown":
             return .brown
+        case "purple":
+            return .purple
+        case "cyan":
+            return .cyan
+        case "teal":
+            return .teal
+        case "indigo":
+            return .indigo
+        case "mint":
+            return .mint
+        case "pink":
+            return .pink
         default:
             return .blue
         }
     }
+    
     
     private var metricTitleView: some View {
         Text(metric.name.uppercased())

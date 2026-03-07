@@ -11,18 +11,25 @@ import SwiftData
 
  
 struct GlobalHistoryView: View {
+    
+    // Environment variable to dismiss screen
     @Environment(\.dismiss) var dismiss
 
     @Query(sort: \HistoryEntry.timestamp, order: .reverse)
+    
+    // All history list.
     var allHistory: [HistoryEntry]
 
+    // Selected counter state variable.
     @State private var selectedCounter: String? = nil
 
+    // Sorted list of counter names.
     var counterNames: [String] {
         let names = allHistory.compactMap { $0.metric?.name }
         return Array(Set(names)).sorted()
     }
 
+    // Filtered history list of counters
     var filteredHistory: [HistoryEntry] {
         guard let selected = selectedCounter else { return allHistory }
         return allHistory.filter { $0.metric?.name == selected }
@@ -157,7 +164,7 @@ struct FilterPill: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline)
+                .font(.headline)
                 .fontWeight(isSelected ? .semibold : .regular)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 7)
