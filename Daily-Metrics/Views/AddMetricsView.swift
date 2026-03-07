@@ -7,43 +7,69 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 struct AddMetricsView: View {
     
     @State private var metricName: String = ""
     @State private var metricDescription: String = ""
+    @State private var metricUnit: String = ""
     
-    @State private var initialValue: Int = 0
-    @State private var incrementBy: Int = 1
+    @State private var initialValue: String = "0"
+    @State private var incrementBy: String = "1"
+    @State private var metricColor: Color = .blue
+    
+    @Environment(\.modelContext) private var modelContext
     
     @FocusState private var isTextFieldFocused: Bool
+    
+    @StateObject private var viewModel = MetricsViewModel()
     
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
         NavigationStack {
             List {
+                
+                // Counter name section
                 Section {
                     metricNameTextField
                     metricDescriptionTextField
+                    metricUnitTextField
                 }
                 
+                // Initial value section
                 Section {
-                    CounterStepperRow(
-                        value: $initialValue, title: "Initial value"
-                    )
+                    initialValueTextField
+                } header: {
+                    Text(LocalizedStrings.initialValueTextFiledHeader)
+                } footer: {
+                    Text(LocalizedStrings.initialValueTextFieldFooter)
                 }
 
+                // Increment by section
                 Section {
-                    CounterStepperRow(
-                        value: $incrementBy, title: "Increment by"
-                    )
+                    incrementByTextField
+                } header: {
+                    Text("Increment by")
+                } footer: {
+                    Text("Enter the amount the counter should increase per tap (default is 1)")
                 }
+                
+                // Color selection section.
+                Section {
+                    ColorPickerView(selectedColor: $metricColor)
+                } header: {
+                    Text("Color")
+                } footer: {
+                    Text("Choose a color for your counter")
+                }
+                
+            }.onTapGesture {
+                isTextFieldFocused = false
             }
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    isTextFieldFocused = true
-                }
+                isTextFieldFocused = true
             }
             .navigationTitle("New Counter")
             .navigationBarTitleDisplayMode(.inline)
@@ -59,7 +85,35 @@ struct AddMetricsView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        dismiss()
+                      
+                        guard let initialValueInt = Int(initialValue) else {
+                            print("Initial value return")
+                            dismiss()
+                            return
+                        }
+                        guard let incrementByInt = Int(incrementBy) else {
+                            print("incrementBy value return")
+                            dismiss()
+                            return
+                        }
+                        
+                        let newMetric = Metric(
+                            name: metricName,
+                            desc: metricDescription,
+                            unit: metricUnit,
+                            value: initialValueInt,
+                            increment: incrementByInt,
+                            color: colorsToString(metricColor)
+                        )
+                        modelContext.insert(newMetric)
+                        
+                        do {
+                            try modelContext.save()
+                            dismiss()
+                        } catch {
+                            print("Failed to save context: \(error)")
+                            dismiss()
+                        }
                     } label: {
                         Image(systemName: "checkmark")
                     }
@@ -76,56 +130,77 @@ struct AddMetricsView: View {
     }
     
     private var metricDescriptionTextField: some View {
-        TextField("Counter description", text: $metricDescription)
+        TextField("what are you tracking?(Optional)", text: $metricDescription)
+    }
+    
+    private var metricUnitTextField: some View {
+        TextField("Unit (Optional)", text: $metricUnit)
+    }
+    
+    private var initialValueTextField: some View {
+        TextField("0", text: $initialValue)
+            .keyboardType(.numberPad)
+    }
+    
+    private var incrementByTextField: some View {
+        TextField("1", text: $incrementBy)
+            .keyboardType(.numberPad)
+    }
+    
+    private func colorsToString(_ color: Color) -> String {
+        switch color {
+        case .red:
+            return "red"
+        case .green:
+            return "green"
+        case .yellow:
+            return "yellow"
+        case .blue:
+            return "blue"
+        case .orange:
+            return "orange"
+        case .brown:
+            return "brown"
+        default:
+            return "blue"
+        }
     }
 }
 
 
-struct CounterStepperRow: View {
+struct ColorPickerView: View {
     
-    @Binding var value: Int
+    // List of colors available to choose from
+    let colors: [Color] = [.red, .green, .yellow, .blue, .orange, .brown]
     
-    let title: String
-    var step: Int = 1
-    
+    // Binding variable for selected color.
+    @Binding var selectedColor: Color
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                
-            HStack(spacing: 24) {
-                Button {
-                    if value >= step {
-                        value -= step
-                    }
-                } label: {
-                    Image(systemName: "minus")
-                        .font(.system(size: 16, weight: .regular))
-                        .frame(width: 32, height: 32)
-                        .background(Color.orange.opacity(0.15))
-                        .clipShape(Circle())
+        HStack(spacing: 16) {
+            ForEach(colors, id: \.self) { color in
+                Button(action: {
+                    selectedColor = color
+                }) {
+                    Circle()
+                        .fill(color.opacity(0.8))
+                        .frame(width: 36, height: 36)
+                        .overlay(
+                            Circle()
+                                .stroke(color.opacity(0.4), lineWidth: 2)
+                                .padding(-6)
+                                .opacity(selectedColor == color ? 1 : 0)
+                        )
                 }
                 .buttonStyle(.plain)
-                
-                Spacer()
-                
-                Text("\(value)")
-                    .font(.system(size: 34, weight: .regular, design: .rounded))
-                
-                Spacer()
-                
-                Button {
-                    value += step
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.system(size: 16, weight: .regular))
-                        .frame(width: 32, height: 32)
-                        .background(Color.blue.opacity(0.15))
-                        .clipShape(Circle())
-                }
-                .buttonStyle(.plain)
+                .animation(.spring(), value: selectedColor)
             }
         }
+        .padding(.horizontal)
     }
+}
+
+struct LocalizedStrings {
+    static let initialValueTextFiledHeader = NSLocalizedString("Initial value", comment: "Initial value text field header")
+    static let initialValueTextFieldFooter = NSLocalizedString("Enter initial value (default is 0)", comment: "Initial value text field footer")
 }
