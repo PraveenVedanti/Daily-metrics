@@ -51,9 +51,9 @@ struct AddMetricsView: View {
                 Section {
                     incrementByTextField
                 } header: {
-                    Text("Increment by")
+                    Text(LocalizedStrings.incrementByTextFieldHeader)
                 } footer: {
-                    Text("Enter the amount the counter should increase per tap (default is 1)")
+                    Text(LocalizedStrings.incrementByTextFieldFooter)
                 }
                 
                 // Color selection section.
@@ -203,4 +203,7 @@ struct ColorPickerView: View {
 struct LocalizedStrings {
     static let initialValueTextFiledHeader = NSLocalizedString("Initial value", comment: "Initial value text field header")
     static let initialValueTextFieldFooter = NSLocalizedString("Enter initial value (default is 0)", comment: "Initial value text field footer")
+    
+    static let incrementByTextFieldHeader = NSLocalizedString("Increment by", comment: "Increment by text field header")
+    static let incrementByTextFieldFooter = NSLocalizedString("Enter the amount the counter should increase per tap (default is 1)", comment: "Increment by text field footer")
 }

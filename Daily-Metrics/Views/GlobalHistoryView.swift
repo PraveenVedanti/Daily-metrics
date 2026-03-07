@@ -9,44 +9,82 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+ 
 struct GlobalHistoryView: View {
-    @Query(sort: \HistoryEntry.timestamp, order: .reverse)
-    var allHistory: [HistoryEntry]
-    
-    // Dismiss the view
     @Environment(\.dismiss) var dismiss
 
-    // Group entries into date sections
+    @Query(sort: \HistoryEntry.timestamp, order: .reverse)
+    var allHistory: [HistoryEntry]
+
+    @State private var selectedCounter: String? = nil
+
+    var counterNames: [String] {
+        let names = allHistory.compactMap { $0.metric?.name }
+        return Array(Set(names)).sorted()
+    }
+
+    var filteredHistory: [HistoryEntry] {
+        guard let selected = selectedCounter else { return allHistory }
+        return allHistory.filter { $0.metric?.name == selected }
+    }
+
     var groupedHistory: [(title: String, entries: [HistoryEntry])] {
         let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
-        let weekStart = calendar.date(byAdding: .day, value: -7, to: today)!
-        let monthStart = calendar.date(byAdding: .month, value: -1, to: today)!
+        let now = Date()
 
-        let sections: [(title: String, filter: (HistoryEntry) -> Bool)] = [
-            ("Today",     { $0.timestamp >= today }),
-            ("Yesterday", { $0.timestamp >= yesterday && $0.timestamp < today }),
-            ("This Week", { $0.timestamp >= weekStart && $0.timestamp < yesterday }),
-            ("This Month",{ $0.timestamp >= monthStart && $0.timestamp < weekStart }),
-            ("Older",     { $0.timestamp < monthStart })
-        ]
-
-        return sections.compactMap { section in
-            let filtered = allHistory.filter(section.filter)
-            guard !filtered.isEmpty else { return nil }  // skip empty sections
-            return (title: section.title, entries: filtered)
+        let grouped = Dictionary(grouping: filteredHistory) { entry -> String in
+            if calendar.isDateInToday(entry.timestamp) {
+                return "Today"
+            } else if calendar.isDateInYesterday(entry.timestamp) {
+                return "Yesterday"
+            } else if let daysAgo = calendar.dateComponents([.day], from: entry.timestamp, to: now).day, daysAgo < 7 {
+                return entry.timestamp.formatted(.dateTime.weekday(.wide))
+            } else {
+                return entry.timestamp.formatted(.dateTime.month(.wide).year())
+            }
         }
+
+        let order = ["Today", "Yesterday"]
+        return grouped
+            .map { (title: $0.key, entries: $0.value) }
+            .sorted { a, b in
+                let aIndex = order.firstIndex(of: a.title)
+                let bIndex = order.firstIndex(of: b.title)
+                if let ai = aIndex, let bi = bIndex { return ai < bi }
+                if aIndex != nil { return true }
+                if bIndex != nil { return false }
+                return (a.entries.first?.timestamp ?? .distantPast) > (b.entries.first?.timestamp ?? .distantPast)
+            }
     }
 
     var body: some View {
         NavigationStack {
             List {
+                // Filter Pills
+                Section {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            FilterPill(title: "All", isSelected: selectedCounter == nil) {
+                                selectedCounter = nil
+                            }
+                            ForEach(counterNames, id: \.self) { name in
+                                FilterPill(title: name, isSelected: selectedCounter == name) {
+                                    selectedCounter = (selectedCounter == name) ? nil : name
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 6)
+                    }
+                }
+                .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
+                .listRowBackground(Color.clear)
+
+                // History Sections
                 ForEach(groupedHistory, id: \.title) { section in
                     Section(header: Text(section.title)) {
                         ForEach(section.entries) { entry in
-                            HStack(spacing: 16) {
-                                
+                            HStack(spacing: 12) {
                                 // Color of the counter
                                 Circle()
                                     .fill(color(from: entry.metric?.color ?? "blue"))
@@ -59,9 +97,8 @@ struct GlobalHistoryView: View {
                                     Text(entry.timestamp.formatted(date: .abbreviated, time: .shortened))
                                         .foregroundStyle(.secondary)
                                 }
-                                
                                 Spacer()
-
+                                
                                 // Counter value change.
                                 Text(entry.change > 0 ? "+\(entry.change)" : "\(entry.change)")
                                     .fontWeight(.bold)
@@ -71,26 +108,24 @@ struct GlobalHistoryView: View {
                     }
                 }
             }
+            .listStyle(.insetGrouped)
+            .navigationTitle("History")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
                         dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left")
                     }
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        dismiss()
+                        
                     } label: {
                         Image(systemName: "trash")
                     }
                 }
             }
-            .listStyle(.insetGrouped)
-            .navigationTitle("All History")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
@@ -111,5 +146,29 @@ struct GlobalHistoryView: View {
         default:
             return .blue
         }
+    }
+}
+
+struct FilterPill: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(isSelected ? .semibold : .regular)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .background(isSelected ? Color.accentColor : Color(.secondarySystemGroupedBackground))
+                .foregroundStyle(isSelected ? .white : .primary)
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .strokeBorder(isSelected ? Color.clear : Color(.separator), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
