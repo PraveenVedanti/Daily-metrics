@@ -47,11 +47,12 @@ struct GlobalHistoryView: View {
                         ForEach(section.entries) { entry in
                             HStack(spacing: 16) {
                                 
+                                // Color of the counter
                                 Circle()
                                     .fill(color(from: entry.metric?.color ?? "blue"))
                                     .frame(width: 16, height: 16)
                                 
-                             
+                                // Counter name and date.
                                 VStack(alignment: .leading) {
                                     Text(entry.metric?.name ?? "Deleted")
                                         .fontWeight(.semibold)
@@ -61,6 +62,7 @@ struct GlobalHistoryView: View {
                                 
                                 Spacer()
 
+                                // Counter value change.
                                 Text(entry.change > 0 ? "+\(entry.change)" : "\(entry.change)")
                                     .fontWeight(.bold)
                                     .foregroundStyle(entry.change > 0 ? .green : .red)
@@ -77,8 +79,16 @@ struct GlobalHistoryView: View {
                         Image(systemName: "chevron.left")
                     }
                 }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                }
             }
-            .listStyle(.plain)
+            .listStyle(.insetGrouped)
             .navigationTitle("All History")
             .navigationBarTitleDisplayMode(.inline)
         }

@@ -17,8 +17,8 @@ struct MetricsListView: View {
     // Show global history sheet.
     @State private var showGlobalHistorySheet = false
     
-    
-    @Query(sort: \Metric.value, order: .reverse)
+    // Query 
+    @Query(sort: \Metric.name, order: .reverse)
     
     // List of metrics created.
     private var metrics: [Metric]
