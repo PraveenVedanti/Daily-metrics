@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import SwiftData
-
  
 struct GlobalHistoryView: View {
     
@@ -66,25 +65,14 @@ struct GlobalHistoryView: View {
 
     var body: some View {
         NavigationStack {
+           
             List {
+                
                 // Filter Pills
                 Section {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            FilterPill(title: "All", isSelected: selectedCounter == nil) {
-                                selectedCounter = nil
-                            }
-                            ForEach(counterNames, id: \.self) { name in
-                                FilterPill(title: name, isSelected: selectedCounter == name) {
-                                    selectedCounter = (selectedCounter == name) ? nil : name
-                                }
-                            }
-                        }
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 6)
-                    }
+                    filteringPills
                 }
-                .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
+                .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
                 .listRowBackground(Color.clear)
 
                 // History Sections
@@ -92,6 +80,7 @@ struct GlobalHistoryView: View {
                     Section(header: Text(section.title)) {
                         ForEach(section.entries) { entry in
                             HStack(spacing: 12) {
+                               
                                 // Color of the counter
                                 Circle()
                                     .fill(color(from: entry.metric?.color ?? "blue"))
@@ -133,6 +122,23 @@ struct GlobalHistoryView: View {
                     }
                 }
             }
+        }
+    }
+    
+    private var filteringPills: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                FilterPill(title: "All", isSelected: selectedCounter == nil) {
+                    selectedCounter = nil
+                }
+                ForEach(counterNames, id: \.self) { name in
+                    FilterPill(title: name, isSelected: selectedCounter == name) {
+                        selectedCounter = (selectedCounter == name) ? nil : name
+                    }
+                }
+            }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 4)
         }
     }
     

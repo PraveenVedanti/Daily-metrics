@@ -11,13 +11,13 @@ import SwiftUI
 
 struct MetricsListView: View {
     
-    // Show add metrics sheet
+    // Show add metrics sheet.
     @State private var showAddMetricsSheet = false
     
     // Show global history sheet.
     @State private var showGlobalHistorySheet = false
     
-    // Query 
+    // Query to fetch counters list.
     @Query(sort: \Metric.name, order: .reverse)
     
     // List of metrics created.
@@ -25,7 +25,7 @@ struct MetricsListView: View {
     
     var body: some View {
         NavigationStack {
-            listContent
+            homeContent
                 .navigationTitle("Counters")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -46,6 +46,59 @@ struct MetricsListView: View {
         }
     }
     
+    @ViewBuilder
+    private var homeContent: some View {
+        if metrics.isEmpty {
+            emptyStateContent
+        } else {
+            listContent
+        }
+    }
+    
+    private var emptyStateContent: some View {
+        VStack(spacing: 16) {
+            
+            // Title
+            Text("No Counters Yet")
+                .font(.system(size: 22, weight: .bold, design: .default))
+                .foregroundStyle(.primary)
+            
+            // Subtitle
+            Text("Create your first counter to start\ntracking anything — steps, cups of\nwater, reps, and more.")
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(3)
+            
+            // CTA Button
+            Button(action: {
+                showAddMetricsSheet.toggle()
+            }, label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 17, weight: .medium))
+                    Text("New Counter")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+            })
+            .buttonStyle(.plain)
+            .foregroundStyle(.white)
+            .padding(.horizontal, 28)
+            .padding(.vertical, 16)
+            .background(Color.secondary, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 4)
+            
+            HStack(spacing: 5) {
+                Image(systemName: "info.circle")
+                    .font(.system(size: 13))
+                Text("You can also tap + in the top right")
+                    .font(.system(size: 13))
+            }
+            .foregroundStyle(Color(.systemGray3))
+            .padding(.top, 4)
+        }
+    }
+    
     private var listContent: some View {
         List(metrics) { metric in
             MetricCard(metric: metric)
@@ -60,12 +113,19 @@ struct MetricsListView: View {
         .background(Color(uiColor: .systemGroupedBackground))
     }
     
+    private var zeroStateView: some View {
+        VStack {
+            Text("No Counters Yet")
+        }
+    }
+    
     private var historyButton: some View {
         Button {
             showGlobalHistorySheet = true
         } label: {
             Image(systemName: "clock")
         }
+        .disabled(metrics.isEmpty)
     }
     
     private var settingsButton: some View {
@@ -74,6 +134,7 @@ struct MetricsListView: View {
         } label: {
             Image(systemName: "gear")
         }
+        .disabled(metrics.isEmpty)
     }
     
     private var addMetricsButton: some View {
@@ -82,13 +143,5 @@ struct MetricsListView: View {
         } label: {
             Image(systemName: "plus")
         }
-    }
-}
-
-struct PressedScaleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 1.2 : 1.0)
-            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }

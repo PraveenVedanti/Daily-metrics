@@ -11,22 +11,25 @@ import SwiftData
 
 struct AddMetricsView: View {
     
+    // Metric name and descriptions.
     @State private var metricName: String = ""
     @State private var metricDescription: String = ""
     @State private var metricUnit: String = ""
     
+    // Metric values.
     @State private var initialValue: String = "0"
     @State private var incrementBy: String = "1"
     @State private var metricColor: Color = .blue
     
+    // Model context for local data.
     @Environment(\.modelContext) private var modelContext
     
     @FocusState private var isTextFieldFocused: Bool
     
-    @StateObject private var viewModel = MetricsViewModel()
-    
+    // Environment variable to dismiss sheet.
     @Environment(\.dismiss) var dismiss
     
+    // Metric colors.
     @State private var firstSetColors: [Color] = [.blue, .green, .yellow, .red, .orange, .brown]
     @State private var secondSetColors: [Color] = [.cyan, .teal, .purple, .indigo, .mint, .pink]
     
@@ -66,9 +69,9 @@ struct AddMetricsView: View {
                         ColorPickerView(colors: secondSetColors, selectedColor: $metricColor)
                     }
                 } header: {
-                    Text("Color")
+                    Text(LocalizedStrings.colorSectionHeader)
                 } footer: {
-                    Text("Choose a color for your counter")
+                    Text(LocalizedStrings.colorSectionFooter)
                 }
                 
             }.onTapGesture {
@@ -77,7 +80,7 @@ struct AddMetricsView: View {
             .onAppear {
                 isTextFieldFocused = true
             }
-            .navigationTitle("New Counter")
+            .navigationTitle(LocalizedStrings.newCounterTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -93,16 +96,15 @@ struct AddMetricsView: View {
                     Button {
                       
                         guard let initialValueInt = Int(initialValue) else {
-                            print("Initial value return")
                             dismiss()
                             return
                         }
                         guard let incrementByInt = Int(incrementBy) else {
-                            print("incrementBy value return")
                             dismiss()
                             return
                         }
                         
+                        // Add new metric to local database.
                         let newMetric = Metric(
                             name: metricName,
                             desc: metricDescription,
@@ -131,16 +133,16 @@ struct AddMetricsView: View {
     }
     
     private var metricNameTextField: some View {
-        TextField("Counter name (Required)", text: $metricName)
+        TextField(LocalizedStrings.metricNameTextFieldPlaceholder, text: $metricName)
             .focused($isTextFieldFocused)
     }
     
     private var metricDescriptionTextField: some View {
-        TextField("what are you tracking?(Optional)", text: $metricDescription)
+        TextField(LocalizedStrings.metricDescriptionTextFieldPlaceholder, text: $metricDescription)
     }
     
     private var metricUnitTextField: some View {
-        TextField("Unit (Optional)", text: $metricUnit)
+        TextField(LocalizedStrings.unitTextFieldPlaceholder, text: $metricUnit)
     }
     
     private var initialValueTextField: some View {
@@ -225,4 +227,13 @@ struct LocalizedStrings {
     
     static let incrementByTextFieldHeader = NSLocalizedString("Increment by", comment: "Increment by text field header")
     static let incrementByTextFieldFooter = NSLocalizedString("Enter the amount the counter should increase per tap (default is 1)", comment: "Increment by text field footer")
+    
+    static let colorSectionHeader = NSLocalizedString("Color", comment: "Color section header")
+    static let colorSectionFooter = NSLocalizedString("Choose a color for your counter", comment: "Color section footer")
+    
+    static let metricNameTextFieldPlaceholder = NSLocalizedString("Counter name (Required)", comment: "Counter name text field placeholder")
+    static let metricDescriptionTextFieldPlaceholder = NSLocalizedString("what are you tracking?(Optional)", comment: "Counter description text field")
+    static let unitTextFieldPlaceholder = NSLocalizedString("Unit (Optional)", comment: "Unit text field placeholder")
+    
+    static let newCounterTitle = NSLocalizedString("New Counter", comment: "New counter navigation title")
 }
