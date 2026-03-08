@@ -11,10 +11,10 @@ import SwiftData
 
 public struct MetricCard: View {
     
+    // Metric object.
     let metric: Metric
     
-    @StateObject private var viewModel = MetricsViewModel()
-    
+    // Model context to fetch data.
     @Environment(\.modelContext) private var modelContext
     
     init(
@@ -26,16 +26,25 @@ public struct MetricCard: View {
     public var body: some View {
         HStack(alignment: .center) {
             
-            VStack(alignment: .leading, spacing: 8) {
-                metricTitleView
-                metricValueView
+            HStack(spacing: 16) {
+                Rectangle()
+                    .fill(color(from: metric.color ?? "blue"))
+                    .frame(width: 4)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    metricTitleView
+                    metricValueView
+                }
             }
             
             Spacer()
                 .frame(height: 12)
             
             // Stepper Section
-            StepperView(buttonHeight: 40) {
+            StepperView(
+                buttonHeight: 40,
+                color: color(from: metric.color ?? "blue")
+            ) {
                 metric.increment(in: modelContext)
                 updateMetric()
             } onMinusTap: {
@@ -43,12 +52,8 @@ public struct MetricCard: View {
                 updateMetric()
             }
         }
-        .onAppear(perform: {
-            print(viewModel.selectedColorName)
-            print(viewModel.selectedColor)
-        })
         .padding(.vertical, 16)
-        .padding(.horizontal, 20)
+        .padding(.trailing, 20)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
@@ -76,10 +81,23 @@ public struct MetricCard: View {
             return .orange
         case "brown":
             return .brown
+        case "purple":
+            return .purple
+        case "cyan":
+            return .cyan
+        case "teal":
+            return .teal
+        case "indigo":
+            return .indigo
+        case "gray":
+            return .gray
+        case "pink":
+            return .pink
         default:
             return .blue
         }
     }
+    
     
     private var metricTitleView: some View {
         Text(metric.name.uppercased())

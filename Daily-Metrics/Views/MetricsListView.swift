@@ -11,13 +11,16 @@ import SwiftUI
 
 struct MetricsListView: View {
     
-    // Show add metrics sheet
+    // Show add metrics view.
     @State private var showAddMetricsSheet = false
     
-    // Show global history sheet.
+    // Show global history view.
     @State private var showGlobalHistorySheet = false
     
-    // Query 
+    // show settings view.
+    @State private var showSettingsSheet = false
+    
+    // Query to fetch counters list.
     @Query(sort: \Metric.name, order: .reverse)
     
     // List of metrics created.
@@ -25,18 +28,14 @@ struct MetricsListView: View {
     
     var body: some View {
         NavigationStack {
-            listContent
+            homeContent
                 .navigationTitle("Counters")
-                .overlay(alignment: .bottomTrailing) {
-                    addMetricsButton
-                }
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        HStack(spacing: 24) {
-                            historyButton
-                            settingsButton
-                        }
-                        .padding(8)
+                        addMetricsButton
+                    }
+                    ToolbarItem(placement: .topBarLeading) {
+                        moreButton
                     }
                 }
                 .sheet(isPresented: $showAddMetricsSheet) {
@@ -48,12 +47,73 @@ struct MetricsListView: View {
         }
     }
     
+    @ViewBuilder
+    private var homeContent: some View {
+        if metrics.isEmpty {
+            zeroStateContent
+        } else {
+            listContent
+        }
+    }
+    
+    // Zero state
+    private var zeroStateContent: some View {
+        VStack(spacing: 16) {
+            
+            // Title
+            Text("No Counters Yet")
+                .font(.system(size: 22, weight: .bold, design: .default))
+                .foregroundStyle(.primary)
+            
+            // Subtitle
+            Text("Create your first counter to start.")
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(3)
+            
+            // CTA Button
+            Button(action: {
+                showAddMetricsSheet.toggle()
+            }, label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 17, weight: .medium))
+                    Text("New Counter")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+            })
+            .buttonStyle(.plain)
+            .foregroundStyle(.white)
+            .padding(.horizontal, 28)
+            .padding(.vertical, 16)
+            .background(Color.secondary, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 4)
+            
+            HStack(spacing: 5) {
+                Image(systemName: "info.circle")
+                    .font(.system(size: 13))
+                Text("You can also tap + in the top right")
+                    .font(.system(size: 13))
+            }
+            .foregroundStyle(Color(.systemGray3))
+            .padding(.top, 4)
+        }
+    }
+    
     private var listContent: some View {
         List(metrics) { metric in
             MetricCard(metric: metric)
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color(uiColor: .systemGroupedBackground))
+                .contextMenu {
+                    Button {
+                        
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                }
         }
         .listRowSpacing(16)
         .scrollContentBackground(.hidden)
@@ -66,15 +126,24 @@ struct MetricsListView: View {
         Button {
             showGlobalHistorySheet = true
         } label: {
-            Image(systemName: "clock")
+            Label("History", systemImage: "clock")
         }
     }
     
     private var settingsButton: some View {
         Button {
-            
+            showSettingsSheet = true
         } label: {
-            Image(systemName: "gear")
+            Label("Settings", systemImage: "gear")
+        }
+    }
+    
+    private var moreButton: some View {
+        Menu {
+            settingsButton
+            historyButton
+        } label: {
+            Image(systemName: "ellipsis")
         }
     }
     
@@ -83,26 +152,6 @@ struct MetricsListView: View {
             showAddMetricsSheet.toggle()
         } label: {
             Image(systemName: "plus")
-                .font(.system(size: 24, weight: .medium))
-                .foregroundColor(.white)
-                .padding(16)
-                .background(
-                    Circle()
-                        .fill(Color.blue.opacity(0.6))
-                        .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
-                )
         }
-        .background(.ultraThinMaterial)
-        .clipShape(Circle())
-        .padding()
-        .buttonStyle(PressedScaleButtonStyle())
-    }
-}
-
-struct PressedScaleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 1.2 : 1.0)
-            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }

@@ -1,8 +1,8 @@
 //
-//  Metrics.swift
+//  CounterModel.swift
 //  Daily-Metrics
 //
-//  Created by Praveen Kumar Vedanti on 3/6/26.
+//  Created by Praveen Kumar Vedanti on 3/8/26.
 //
 
 import Foundation
@@ -87,14 +87,14 @@ extension Metric {
     
     /// Increment and record history
     func increment(by delta: Int = 1, in context: ModelContext) {
-        value += delta
+        value += (delta * increment)
         let entry = HistoryEntry(change: delta, valueAfter: value, metric: self)
         context.insert(entry)
     }
     
     /// Decrement and record history
     func decrement(by delta: Int = 1, in context: ModelContext) {
-        value -= delta
+        value -= (delta * increment)
         let entry = HistoryEntry(change: -delta, valueAfter: value, metric: self)
         context.insert(entry)
     }

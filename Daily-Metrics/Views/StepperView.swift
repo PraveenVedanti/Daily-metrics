@@ -13,19 +13,24 @@ struct StepperView: View {
     let onPlusTap: () -> Void
     let onMinusTap: () -> Void
     let buttonHeight: CGFloat
+    let color: Color
+    
+    @Environment(\.colorScheme) var colorScheme
     
     init(
         buttonHeight: CGFloat,
+        color: Color,
         onPlusTap: @escaping () -> Void,
         onMinusTap: @escaping () -> Void
     ) {
         self.buttonHeight = buttonHeight
+        self.color = color
         self.onPlusTap = onPlusTap
         self.onMinusTap = onMinusTap
     }
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 8) {
             decrementButton
             
             incrementButton
@@ -38,9 +43,9 @@ struct StepperView: View {
         } label: {
             Image(systemName: "plus")
                 .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color.teal)
-                .frame(width: buttonHeight, height: buttonHeight)
-                .background(Color.teal.opacity(0.12))
+                .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
+                .frame(width: buttonHeight * 1.2, height: buttonHeight * 1.2)
+                .background(color.opacity(colorScheme == .dark ?  0.6 : 0.8))
                 .clipShape(Circle())
         }
     }
@@ -51,10 +56,14 @@ struct StepperView: View {
         } label: {
             Image(systemName: "minus")
                 .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color.orange)
-                .frame(width: buttonHeight, height: buttonHeight)
-                .background(Color.orange.opacity(0.12))
+                .foregroundStyle(Color.red.opacity(0.8))
+                .frame(width: buttonHeight * 0.8, height: buttonHeight * 0.8)
+                .background(Color.clear)
                 .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(Color.red.opacity(0.6), lineWidth: 0.4)
+                )
         }
     }
 }
