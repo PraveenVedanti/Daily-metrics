@@ -31,10 +31,12 @@ struct MetricsListView: View {
                     ToolbarItem(placement: .topBarTrailing) {
                         HStack(spacing: 24) {
                             historyButton
-                            settingsButton
                             addMetricsButton
                         }
                         .padding(8)
+                    }
+                    ToolbarItem(placement: .topBarLeading) {
+                        settingsButton
                     }
                 }
                 .sheet(isPresented: $showAddMetricsSheet) {
@@ -64,7 +66,7 @@ struct MetricsListView: View {
                 .foregroundStyle(.primary)
             
             // Subtitle
-            Text("Create your first counter to start\ntracking anything — steps, cups of\nwater, reps, and more.")
+            Text("Create your first counter to start.")
                 .font(.system(size: 15))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -123,7 +125,7 @@ struct MetricsListView: View {
         Button {
             showGlobalHistorySheet = true
         } label: {
-            Image(systemName: "clock")
+            Image(systemName: "clock.fill")
         }
         .disabled(metrics.isEmpty)
     }

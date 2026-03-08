@@ -11,10 +11,10 @@ import SwiftData
 
 public struct MetricCard: View {
     
+    // Metric object.
     let metric: Metric
     
-    @StateObject private var viewModel = MetricsViewModel()
-    
+    //
     @Environment(\.modelContext) private var modelContext
     
     init(
@@ -26,9 +26,15 @@ public struct MetricCard: View {
     public var body: some View {
         HStack(alignment: .center) {
             
-            VStack(alignment: .leading, spacing: 8) {
-                metricTitleView
-                metricValueView
+            HStack(spacing: 16) {
+                Rectangle()
+                    .fill(color(from: metric.color ?? "blue"))
+                    .frame(width: 4)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    metricTitleView
+                    metricValueView
+                }
             }
             
             Spacer()
@@ -47,7 +53,7 @@ public struct MetricCard: View {
             }
         }
         .padding(.vertical, 16)
-        .padding(.horizontal, 20)
+        .padding(.trailing, 20)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
@@ -83,8 +89,8 @@ public struct MetricCard: View {
             return .teal
         case "indigo":
             return .indigo
-        case "mint":
-            return .mint
+        case "gray":
+            return .gray
         case "pink":
             return .pink
         default:

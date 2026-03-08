@@ -19,6 +19,9 @@ struct AddMetricsView: View {
     // Metric values.
     @State private var initialValue: String = "0"
     @State private var incrementBy: String = "1"
+    @State private var metricTarget: String = "0"
+    
+    // Metric color
     @State private var metricColor: Color = .blue
     
     // Model context for local data.
@@ -31,7 +34,7 @@ struct AddMetricsView: View {
     
     // Metric colors.
     @State private var firstSetColors: [Color] = [.blue, .green, .yellow, .red, .orange, .brown]
-    @State private var secondSetColors: [Color] = [.cyan, .teal, .purple, .indigo, .mint, .pink]
+    @State private var secondSetColors: [Color] = [.cyan, .teal, .purple, .indigo, .gray, .pink]
     
     var body: some View {
         NavigationStack {
@@ -60,6 +63,15 @@ struct AddMetricsView: View {
                     Text(LocalizedStrings.incrementByTextFieldHeader)
                 } footer: {
                     Text(LocalizedStrings.incrementByTextFieldFooter)
+                }
+                
+                // Set the target
+                Section {
+                    metricTargetTextField
+                } header: {
+                    Text("Target (Optional)")
+                } footer: {
+                    Text("Set target for your counter to track progress")
                 }
                 
                 // Color selection section.
@@ -155,6 +167,11 @@ struct AddMetricsView: View {
             .keyboardType(.numberPad)
     }
     
+    private var metricTargetTextField: some View {
+        TextField("1", text: $metricTarget)
+            .keyboardType(.numberPad)
+    }
+    
     private func colorsToString(_ color: Color) -> String {
         switch color {
         case .red:
@@ -177,8 +194,8 @@ struct AddMetricsView: View {
             return "teal"
         case .indigo:
             return "indigo"
-        case .mint:
-            return "mint"
+        case .gray:
+            return "gray"
         case .pink:
             return "pink"
             

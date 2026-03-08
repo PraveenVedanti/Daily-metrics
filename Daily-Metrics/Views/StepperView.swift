@@ -44,7 +44,7 @@ struct StepperView: View {
             Image(systemName: "plus")
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
-                .frame(width: buttonHeight * 1.4, height: buttonHeight * 1.4)
+                .frame(width: buttonHeight * 1.2, height: buttonHeight * 1.2)
                 .background(color.opacity(colorScheme == .dark ?  0.6 : 0.8))
                 .clipShape(Circle())
         }
