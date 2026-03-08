@@ -14,7 +14,7 @@ public struct MetricCard: View {
     // Metric object.
     let metric: Metric
     
-    //
+    // Model context to fetch data.
     @Environment(\.modelContext) private var modelContext
     
     init(

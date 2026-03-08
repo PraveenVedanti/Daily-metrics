@@ -11,11 +11,14 @@ import SwiftUI
 
 struct MetricsListView: View {
     
-    // Show add metrics sheet.
+    // Show add metrics view.
     @State private var showAddMetricsSheet = false
     
-    // Show global history sheet.
+    // Show global history view.
     @State private var showGlobalHistorySheet = false
+    
+    // show settings view.
+    @State private var showSettingsSheet = false
     
     // Query to fetch counters list.
     @Query(sort: \Metric.name, order: .reverse)
@@ -29,14 +32,10 @@ struct MetricsListView: View {
                 .navigationTitle("Counters")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        HStack(spacing: 24) {
-                            historyButton
-                            addMetricsButton
-                        }
-                        .padding(8)
+                        addMetricsButton
                     }
                     ToolbarItem(placement: .topBarLeading) {
-                        settingsButton
+                        moreButton
                     }
                 }
                 .sheet(isPresented: $showAddMetricsSheet) {
@@ -51,13 +50,14 @@ struct MetricsListView: View {
     @ViewBuilder
     private var homeContent: some View {
         if metrics.isEmpty {
-            emptyStateContent
+            zeroStateContent
         } else {
             listContent
         }
     }
     
-    private var emptyStateContent: some View {
+    // Zero state
+    private var zeroStateContent: some View {
         VStack(spacing: 16) {
             
             // Title
@@ -107,6 +107,13 @@ struct MetricsListView: View {
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color(uiColor: .systemGroupedBackground))
+                .contextMenu {
+                    Button {
+                        
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                }
         }
         .listRowSpacing(16)
         .scrollContentBackground(.hidden)
@@ -115,28 +122,29 @@ struct MetricsListView: View {
         .background(Color(uiColor: .systemGroupedBackground))
     }
     
-    private var zeroStateView: some View {
-        VStack {
-            Text("No Counters Yet")
-        }
-    }
-    
     private var historyButton: some View {
         Button {
             showGlobalHistorySheet = true
         } label: {
-            Image(systemName: "clock.fill")
+            Label("History", systemImage: "clock")
         }
-        .disabled(metrics.isEmpty)
     }
     
     private var settingsButton: some View {
         Button {
-            
+            showSettingsSheet = true
         } label: {
-            Image(systemName: "gear")
+            Label("Settings", systemImage: "gear")
         }
-        .disabled(metrics.isEmpty)
+    }
+    
+    private var moreButton: some View {
+        Menu {
+            settingsButton
+            historyButton
+        } label: {
+            Image(systemName: "ellipsis")
+        }
     }
     
     private var addMetricsButton: some View {
