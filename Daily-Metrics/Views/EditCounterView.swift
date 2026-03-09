@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Edit counter view.
+
 struct EditCounterView: View {
     let metric: Metric
 
@@ -177,5 +179,4 @@ struct EditCounterView: View {
             return .blue
         }
     }
-    
 }

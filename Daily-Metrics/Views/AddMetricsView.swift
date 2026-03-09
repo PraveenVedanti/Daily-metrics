@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+// MARK: - Add metrics view.
+
 struct AddMetricsView: View {
     
     // Metric name and descriptions.
@@ -105,8 +107,8 @@ struct AddMetricsView: View {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                      
+                    
+                    Button("Add") {
                         guard let initialValueInt = Int(initialValue) else {
                             dismiss()
                             return
@@ -134,10 +136,7 @@ struct AddMetricsView: View {
                             print("Failed to save context: \(error)")
                             dismiss()
                         }
-                    } label: {
-                        Text("Add")
                     }
-                    .buttonStyle(.plain)
                     .disabled(metricName.isEmpty)
                 }
             }
@@ -205,6 +204,7 @@ struct AddMetricsView: View {
     }
 }
 
+// MARK: - Colour picker view.
 
 struct ColorPickerView: View {
     
@@ -237,6 +237,8 @@ struct ColorPickerView: View {
         .padding(.horizontal)
     }
 }
+
+// MARK: - Localized strings.
 
 struct LocalizedStrings {
     static let initialValueTextFiledHeader = NSLocalizedString("Initial value", comment: "Initial value text field header")

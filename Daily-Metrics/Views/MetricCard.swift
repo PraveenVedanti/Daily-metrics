@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+// MARK: - Metric card.
+
 public struct MetricCard: View {
     
     // Metric object.

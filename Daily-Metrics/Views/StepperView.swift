@@ -8,11 +8,20 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Stepper view.
+
 struct StepperView: View {
     
+    // Action handler for plus tap
     let onPlusTap: () -> Void
+    
+    // Action handler for minus tap
     let onMinusTap: () -> Void
+    
+    // Stepper button height
     let buttonHeight: CGFloat
+  
+    // Button color.
     let color: Color
     
     @Environment(\.colorScheme) var colorScheme

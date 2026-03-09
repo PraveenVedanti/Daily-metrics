@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 import SwiftData
+
+// MARK: - Global history view.
  
 struct GlobalHistoryView: View {
     
@@ -125,6 +127,10 @@ struct GlobalHistoryView: View {
         }
     }
     
+    private func calculateIncrement(metric: Metric) -> Int {
+        return metric.value * metric.increment
+    }
+    
     private var filteringPills: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
@@ -161,6 +167,8 @@ struct GlobalHistoryView: View {
         }
     }
 }
+
+// MARK: - Filter pill.
 
 struct FilterPill: View {
     let title: String

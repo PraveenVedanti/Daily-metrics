@@ -9,6 +9,8 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+// MARK: - Metrics list view.
+
 struct MetricsListView: View {
     
     // Show add metrics view.
