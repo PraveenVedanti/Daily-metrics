@@ -135,7 +135,7 @@ struct AddMetricsView: View {
                             dismiss()
                         }
                     } label: {
-                        Image(systemName: "checkmark")
+                        Text("Add")
                     }
                     .buttonStyle(.plain)
                     .disabled(metricName.isEmpty)

@@ -20,6 +20,10 @@ struct MetricsListView: View {
     // show settings view.
     @State private var showSettingsSheet = false
     
+   
+    
+    @State private var selectedMetric: Metric?
+    
     // Query to fetch counters list.
     @Query(sort: \Metric.name, order: .reverse)
     
@@ -107,13 +111,14 @@ struct MetricsListView: View {
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color(uiColor: .systemGroupedBackground))
-                .contextMenu {
-                    Button {
-                        
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
-                    }
-                }
+//                .contextMenu {
+//                    Button {
+//                        selectedMetric = metric
+//                        showEditMetricsSheet = true
+//                    } label: {
+//                        Label("Edit", systemImage: "pencil")
+//                    }
+//                }
         }
         .listRowSpacing(16)
         .scrollContentBackground(.hidden)

@@ -30,7 +30,7 @@ struct StepperView: View {
     }
     
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 16) {
             decrementButton
             
             incrementButton

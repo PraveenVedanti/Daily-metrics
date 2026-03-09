@@ -17,6 +17,8 @@ public struct MetricCard: View {
     // Model context to fetch data.
     @Environment(\.modelContext) private var modelContext
     
+    @State private var showEditMetricsSheet = false
+    
     init(
         metric: Metric,
     ) {
@@ -30,6 +32,14 @@ public struct MetricCard: View {
                 Rectangle()
                     .fill(color(from: metric.color ?? "blue"))
                     .frame(width: 4)
+                    .clipShape(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 18,
+                            bottomLeadingRadius: 18,
+                            bottomTrailingRadius: 0,
+                            topTrailingRadius: 0
+                        )
+                    )
                 
                 VStack(alignment: .leading, spacing: 8) {
                     metricTitleView
@@ -51,6 +61,31 @@ public struct MetricCard: View {
                 metric.decrement(in: modelContext)
                 updateMetric()
             }
+        }
+        .contextMenu {
+            // Edit counter.
+            Button {
+                showEditMetricsSheet = true
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            
+            // Reset counter.
+            Button {
+                
+            } label: {
+                Label("Reset counter", systemImage: "arrow.clockwise")
+            }
+            
+            // Delete counter.
+            Button(role: .destructive) {
+                // Delete logic here
+            } label: {
+                Label("Delete counter", systemImage: "trash")
+            }
+        }
+        .sheet(isPresented: $showEditMetricsSheet) {
+            EditCounterView(metric: metric)
         }
         .padding(.vertical, 16)
         .padding(.trailing, 20)
