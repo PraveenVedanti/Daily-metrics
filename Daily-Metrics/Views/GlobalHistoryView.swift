@@ -111,12 +111,6 @@ struct GlobalHistoryView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .topBarLeading) {
                     Button {
                         
                     } label: {

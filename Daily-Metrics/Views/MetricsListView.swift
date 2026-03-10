@@ -16,15 +16,10 @@ struct MetricsListView: View {
     // Show add metrics view.
     @State private var showAddMetricsSheet = false
     
-    // Show global history view.
-    @State private var showGlobalHistorySheet = false
-    
-    // show settings view.
-    @State private var showSettingsSheet = false
+    @State private var showEditMetricsSheet = false
     
     @Environment(\.colorScheme) var colorScheme
    
-    
     @State private var selectedMetric: Metric?
     
     // Query to fetch counters list.
@@ -39,19 +34,16 @@ struct MetricsListView: View {
                 .navigationTitle("Counters")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        HStack(spacing: 32) {
-                            settingsButton
-                            historyButton
-                            addMetricsButton
-                        }
-                        .padding()
+                       addMetricsButton
                     }
                 }
                 .sheet(isPresented: $showAddMetricsSheet) {
                     AddMetricsView()
                 }
-                .fullScreenCover(isPresented: $showGlobalHistorySheet) {
-                    GlobalHistoryView()
+                .sheet(isPresented: $showEditMetricsSheet) {
+                    if let selectedMetric {
+                        EditCounterView(metric: selectedMetric)
+                    }
                 }
         }
     }
@@ -118,7 +110,8 @@ struct MetricsListView: View {
                 .listRowBackground(Color(uiColor: .systemGroupedBackground))
                 .contextMenu {
                     Button {
-                        
+                        showEditMetricsSheet = true
+                        selectedMetric = metric
                     } label: {
                         Label("Edit", systemImage: "pencil")
                     }
@@ -129,31 +122,6 @@ struct MetricsListView: View {
         .listRowSeparator(.hidden)
         .buttonStyle(.borderless)
         .background(Color(uiColor: .systemGroupedBackground))
-    }
-    
-    private var historyButton: some View {
-        Button {
-            showGlobalHistorySheet = true
-        } label: {
-            Image(systemName: "clock")
-        }
-    }
-    
-    private var settingsButton: some View {
-        Button {
-            showSettingsSheet = true
-        } label: {
-            Image(systemName: "gear")
-        }
-    }
-    
-    private var moreButton: some View {
-        Menu {
-            settingsButton
-            historyButton
-        } label: {
-            Image(systemName: "ellipsis")
-        }
     }
     
     private var addMetricsButton: some View {
