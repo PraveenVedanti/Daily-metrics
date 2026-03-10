@@ -21,6 +21,8 @@ public struct MetricCard: View {
     
     @State private var showEditMetricsSheet = false
     
+    @Environment(\.colorScheme) var colorScheme
+    
     init(
         metric: Metric,
     ) {
@@ -28,72 +30,52 @@ public struct MetricCard: View {
     }
     
     public var body: some View {
-        HStack(alignment: .center) {
+        
+        HStack {
+            decrementButton
+                .frame(maxWidth: .infinity, alignment: .leading)
+
             
-            HStack(spacing: 16) {
-                Rectangle()
-                    .fill(color(from: metric.color ?? "blue"))
-                    .frame(width: 4)
-                    .clipShape(
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 18,
-                            bottomLeadingRadius: 18,
-                            bottomTrailingRadius: 0,
-                            topTrailingRadius: 0
-                        )
-                    )
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    metricTitleView
-                    metricValueView
-                }
+            VStack(spacing: 8) {
+                metricTitleView
+                metricValueView
             }
+            .frame(maxWidth: .infinity)
+            .multilineTextAlignment(.center)
             
-            Spacer()
-                .frame(height: 12)
-            
-            // Stepper Section
-            StepperView(
-                buttonHeight: 40,
-                color: color(from: metric.color ?? "blue")
-            ) {
-                metric.increment(in: modelContext)
-                updateMetric()
-            } onMinusTap: {
-                metric.decrement(in: modelContext)
-                updateMetric()
-            }
-        }
-        .contextMenu {
-            // Edit counter.
-            Button {
-                showEditMetricsSheet = true
-            } label: {
-                Label("Edit", systemImage: "pencil")
-            }
-            
-            // Reset counter.
-            Button {
-                
-            } label: {
-                Label("Reset counter", systemImage: "arrow.clockwise")
-            }
-            
-            // Delete counter.
-            Button(role: .destructive) {
-                // Delete logic here
-            } label: {
-                Label("Delete counter", systemImage: "trash")
-            }
-        }
-        .sheet(isPresented: $showEditMetricsSheet) {
-            EditCounterView(metric: metric)
+            incrementButton
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(.vertical, 16)
-        .padding(.trailing, 20)
-        .background(Color(uiColor: .secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+        .padding(.horizontal, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(
+                    colorScheme == .light
+                    ? metricColor.opacity(0.04)
+                    : metricColor.opacity(0.2)
+                )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(
+                    colorScheme == .light
+                    ? metricColor.opacity(0.4)
+                    : metricColor.opacity(0.6),
+                    lineWidth: 0.6
+                )
+        )
+        .shadow(
+            color: colorScheme == .light
+            ? .black.opacity(0.06)
+            : .black.opacity(0.35),
+            radius: colorScheme == .light ? 10 : 4,
+            y: colorScheme == .light ? 4 : 2
+        )
+    }
+    
+    private var metricColor: Color {
+        color(from: metric.color ?? "blue")
     }
     
     private func updateMetric() {
@@ -143,13 +125,48 @@ public struct MetricCard: View {
     }
     
     private var metricValueView: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 4) {
-            Text("\(metric.value)")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
-                .contentTransition(.numericText())
-            Text(metric.unit ?? "")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        Text("\(metric.value)")
+            .font(.system(size: 34, weight: .bold, design: .rounded))
+            .contentTransition(.numericText())
+            .monospacedDigit()
+    }
+    
+    private var incrementButton: some View {
+        Button {
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
+            
+            metric.increment(in: modelContext)
+            updateMetric()
+        } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
+                .frame(width: 48, height: 48)
+                .background(metricColor.opacity(colorScheme == .dark ?  0.6 : 0.8))
+                .clipShape(Circle())
         }
     }
+    
+    private var decrementButton: some View {
+        Button {
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
+            
+            metric.decrement(in: modelContext)
+            updateMetric()
+        } label: {
+            Image(systemName: "minus")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(metricColor.opacity(0.8))
+                .frame(width: 48, height: 48)
+                .background(Color.clear)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(metricColor.opacity(0.6), lineWidth: 0.4)
+                )
+        }
+    }
+
 }

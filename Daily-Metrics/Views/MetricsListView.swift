@@ -22,6 +22,7 @@ struct MetricsListView: View {
     // show settings view.
     @State private var showSettingsSheet = false
     
+    @Environment(\.colorScheme) var colorScheme
    
     
     @State private var selectedMetric: Metric?
@@ -38,10 +39,12 @@ struct MetricsListView: View {
                 .navigationTitle("Counters")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        addMetricsButton
-                    }
-                    ToolbarItem(placement: .topBarLeading) {
-                        moreButton
+                        HStack(spacing: 32) {
+                            settingsButton
+                            historyButton
+                            addMetricsButton
+                        }
+                        .padding()
                     }
                 }
                 .sheet(isPresented: $showAddMetricsSheet) {
@@ -113,14 +116,13 @@ struct MetricsListView: View {
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color(uiColor: .systemGroupedBackground))
-//                .contextMenu {
-//                    Button {
-//                        selectedMetric = metric
-//                        showEditMetricsSheet = true
-//                    } label: {
-//                        Label("Edit", systemImage: "pencil")
-//                    }
-//                }
+                .contextMenu {
+                    Button {
+                        
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                }
         }
         .listRowSpacing(16)
         .scrollContentBackground(.hidden)
@@ -133,7 +135,7 @@ struct MetricsListView: View {
         Button {
             showGlobalHistorySheet = true
         } label: {
-            Label("History", systemImage: "clock")
+            Image(systemName: "clock")
         }
     }
     
@@ -141,7 +143,7 @@ struct MetricsListView: View {
         Button {
             showSettingsSheet = true
         } label: {
-            Label("Settings", systemImage: "gear")
+            Image(systemName: "gear")
         }
     }
     

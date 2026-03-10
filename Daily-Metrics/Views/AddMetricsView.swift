@@ -13,10 +13,8 @@ import SwiftData
 
 struct AddMetricsView: View {
     
-    // Metric name and descriptions.
+    // Metric name
     @State private var metricName: String = ""
-    @State private var metricDescription: String = ""
-    @State private var metricUnit: String = ""
     
     // Metric values.
     @State private var initialValue: String = "0"
@@ -45,8 +43,6 @@ struct AddMetricsView: View {
                 // Counter name section
                 Section {
                     metricNameTextField
-                    metricDescriptionTextField
-                    metricUnitTextField
                 }
                 
                 // Initial value section
@@ -121,8 +117,6 @@ struct AddMetricsView: View {
                         // Add new metric to local database.
                         let newMetric = Metric(
                             name: metricName,
-                            desc: metricDescription,
-                            unit: metricUnit,
                             value: initialValueInt,
                             increment: incrementByInt,
                             color: colorsToString(metricColor)
@@ -146,14 +140,6 @@ struct AddMetricsView: View {
     private var metricNameTextField: some View {
         TextField(LocalizedStrings.metricNameTextFieldPlaceholder, text: $metricName)
             .focused($isTextFieldFocused)
-    }
-    
-    private var metricDescriptionTextField: some View {
-        TextField(LocalizedStrings.metricDescriptionTextFieldPlaceholder, text: $metricDescription)
-    }
-    
-    private var metricUnitTextField: some View {
-        TextField(LocalizedStrings.unitTextFieldPlaceholder, text: $metricUnit)
     }
     
     private var initialValueTextField: some View {
@@ -251,8 +237,6 @@ struct LocalizedStrings {
     static let colorSectionFooter = NSLocalizedString("Choose a color for your counter", comment: "Color section footer")
     
     static let metricNameTextFieldPlaceholder = NSLocalizedString("Counter name (Required)", comment: "Counter name text field placeholder")
-    static let metricDescriptionTextFieldPlaceholder = NSLocalizedString("what are you tracking?(Optional)", comment: "Counter description text field")
-    static let unitTextFieldPlaceholder = NSLocalizedString("Unit (Optional)", comment: "Unit text field placeholder")
     
     static let newCounterTitle = NSLocalizedString("New Counter", comment: "New counter navigation title")
 }

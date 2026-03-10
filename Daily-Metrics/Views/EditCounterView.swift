@@ -18,8 +18,6 @@ struct EditCounterView: View {
     
     // Metric name and descriptions.
     @State private var metricName: String = ""
-    @State private var metricDescription: String = ""
-    @State private var metricUnit: String = ""
     
     @State private var initialValue: String = "0"
     @State private var incrementBy: String = "1"
@@ -41,8 +39,6 @@ struct EditCounterView: View {
                 // Counter name section
                 Section {
                     metricNameTextField
-                    metricDescriptionTextField
-                    metricUnitTextField
                 }
                 
                 // Initial value section
@@ -88,8 +84,6 @@ struct EditCounterView: View {
                 metricName = metric.name
                 initialValue = "\(metric.value)"
                 incrementBy = "\(metric.increment)"
-                metricUnit = metric.unit ?? ""
-                metricDescription = metric.desc ?? ""
                 metricColor = color(from: metric.color ?? "blue")
             }
             .toolbar {
@@ -110,28 +104,6 @@ struct EditCounterView: View {
     private var metricNameTextField: some View {
         TextField("", text: $metricName)
             .focused($isTextFieldFocused)
-    }
-    
-    private var metricDescriptionTextField: some View {
-        TextField(metricDescFieldText(), text: $metricDescription)
-    }
-    
-    private func metricDescFieldText() -> String {
-        if let metricDesc = metric.desc, metricDesc.isEmpty {
-            return LocalizedStrings.metricDescriptionTextFieldPlaceholder
-        }
-        return  ""
-    }
-    
-    private func metricUnitFieldText() -> String {
-        if let metricUnit = metric.unit, metricUnit.isEmpty {
-            return LocalizedStrings.unitTextFieldPlaceholder
-        }
-        return  ""
-    }
-    
-    private var metricUnitTextField: some View {
-        TextField(metricUnitFieldText(), text: $metricUnit)
     }
     
     private var initialValueTextField: some View {
