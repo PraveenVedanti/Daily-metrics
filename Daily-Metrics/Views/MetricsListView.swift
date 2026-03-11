@@ -40,10 +40,8 @@ struct MetricsListView: View {
                 .sheet(isPresented: $showAddMetricsSheet) {
                     AddMetricsView()
                 }
-                .sheet(isPresented: $showEditMetricsSheet) {
-                    if let selectedMetric {
-                        EditCounterView(metric: selectedMetric)
-                    }
+                .sheet(item: $selectedMetric) { metric in
+                    EditCounterView(metric: metric)
                 }
         }
     }
@@ -108,19 +106,30 @@ struct MetricsListView: View {
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color(uiColor: .systemGroupedBackground))
-                .contextMenu {
+                .swipeActions {
                     Button {
-                        showEditMetricsSheet = true
                         selectedMetric = metric
                     } label: {
                         Label("Edit", systemImage: "pencil")
+                    }
+                    .tint(.blue)
+                    
+                    Button {
+                    } label: {
+                        Label("Reset", systemImage: "arrow.counterclockwise")
+                    }
+                    .tint(.orange)
+                    
+                    Button(role: .destructive) {
+                        print("Deleting conversation")
+                    } label: {
+                        Label("Delete", systemImage: "trash.fill")
                     }
                 }
         }
         .listRowSpacing(16)
         .scrollContentBackground(.hidden)
         .listRowSeparator(.hidden)
-        .buttonStyle(.borderless)
         .background(Color(uiColor: .systemGroupedBackground))
     }
     

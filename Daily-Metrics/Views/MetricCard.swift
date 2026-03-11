@@ -100,18 +100,10 @@ public struct MetricCard: View {
             return .orange
         case "brown":
             return .brown
-        case "purple":
-            return .purple
-        case "cyan":
-            return .cyan
         case "teal":
             return .teal
-        case "indigo":
-            return .indigo
         case "gray":
             return .gray
-        case "pink":
-            return .pink
         default:
             return .blue
         }
@@ -128,7 +120,7 @@ public struct MetricCard: View {
         Text("\(metric.value)")
             .font(.system(size: 34, weight: .bold, design: .rounded))
             .contentTransition(.numericText())
-            .monospacedDigit()
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: metric.value)
     }
     
     private var incrementButton: some View {
@@ -146,6 +138,7 @@ public struct MetricCard: View {
                 .background(metricColor.opacity(colorScheme == .dark ?  0.6 : 0.8))
                 .clipShape(Circle())
         }
+        .buttonStyle(.borderless)
     }
     
     private var decrementButton: some View {
@@ -167,6 +160,6 @@ public struct MetricCard: View {
                         .stroke(metricColor.opacity(0.6), lineWidth: 0.4)
                 )
         }
+        .buttonStyle(.borderless)
     }
-
 }

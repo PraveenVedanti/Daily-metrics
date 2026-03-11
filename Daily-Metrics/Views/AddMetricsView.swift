@@ -33,8 +33,8 @@ struct AddMetricsView: View {
     @Environment(\.dismiss) var dismiss
     
     // Metric colors.
-    @State private var firstSetColors: [Color] = [.blue, .green, .yellow, .red, .orange, .brown]
-    @State private var secondSetColors: [Color] = [.cyan, .teal, .purple, .indigo, .gray, .pink]
+    @State private var firstSetColors: [Color] = [.blue, .green, .yellow, .red]
+    @State private var secondSetColors: [Color] = [.teal, .brown, .orange, .gray]
     
     var body: some View {
         NavigationStack {
@@ -88,7 +88,12 @@ struct AddMetricsView: View {
                 isTextFieldFocused = false
             }
             .onAppear {
-                isTextFieldFocused = true
+                Task {
+                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    await MainActor.run {
+                        isTextFieldFocused = true
+                    }
+                }
             }
             .navigationTitle(LocalizedStrings.newCounterTitle)
             .navigationBarTitleDisplayMode(.inline)
@@ -171,18 +176,10 @@ struct AddMetricsView: View {
             return "orange"
         case .brown:
             return "brown"
-        case .purple:
-            return "purple"
-        case .cyan:
-            return "cyan"
         case .teal:
             return "teal"
-        case .indigo:
-            return "indigo"
         case .gray:
             return "gray"
-        case .pink:
-            return "pink"
             
         default:
             return "blue"
@@ -239,4 +236,6 @@ struct LocalizedStrings {
     static let metricNameTextFieldPlaceholder = NSLocalizedString("Counter name (Required)", comment: "Counter name text field placeholder")
     
     static let newCounterTitle = NSLocalizedString("New Counter", comment: "New counter navigation title")
+    
+    static let counterValueTextFiledHeader = NSLocalizedString("Counter value", comment: "Counter value text field header")
 }

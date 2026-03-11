@@ -19,9 +19,9 @@ struct EditCounterView: View {
     // Metric name and descriptions.
     @State private var metricName: String = ""
     
-    @State private var initialValue: String = "0"
-    @State private var incrementBy: String = "1"
-    @State private var metricTarget: String = "0"
+    @State private var initialValue: String = ""
+    @State private var incrementBy: String = ""
+    @State private var metricTarget: String = ""
     
     @FocusState private var isTextFieldFocused: Bool
     
@@ -32,6 +32,14 @@ struct EditCounterView: View {
     @State private var firstSetColors: [Color] = [.blue, .green, .yellow, .red, .orange, .brown]
     @State private var secondSetColors: [Color] = [.cyan, .teal, .purple, .indigo, .gray, .pink]
     
+    init(metric: Metric) {
+        self.metric = metric
+        _metricName = State(initialValue: metric.name)
+        _initialValue = State(initialValue: "\(metric.value)")
+        _incrementBy = State(initialValue: "\(metric.increment)") 
+        _metricColor = State(initialValue: color(from: metric.color ?? "blue"))
+    }
+    
     var body: some View {
         NavigationStack {
             List {
@@ -41,31 +49,19 @@ struct EditCounterView: View {
                     metricNameTextField
                 }
                 
-                // Initial value section
-                Section {
+                // Counter value section
+                Section("Counter value") {
                     initialValueTextField
-                } header: {
-                    Text(LocalizedStrings.initialValueTextFiledHeader)
-                } footer: {
-                    Text(LocalizedStrings.initialValueTextFieldFooter)
                 }
 
                 // Increment by section
-                Section {
+                Section(LocalizedStrings.incrementByTextFieldHeader) {
                     incrementByTextField
-                } header: {
-                    Text(LocalizedStrings.incrementByTextFieldHeader)
-                } footer: {
-                    Text(LocalizedStrings.incrementByTextFieldFooter)
                 }
                 
                 // Set the target
-                Section {
+                Section("Target (Optional)") {
                     metricTargetTextField
-                } header: {
-                    Text("Target (Optional)")
-                } footer: {
-                    Text("Set target for your counter to track progress")
                 }
                 
                 // Color selection section.
@@ -81,10 +77,12 @@ struct EditCounterView: View {
                 }
             }
             .onAppear {
-                metricName = metric.name
-                initialValue = "\(metric.value)"
-                incrementBy = "\(metric.increment)"
-                metricColor = color(from: metric.color ?? "blue")
+                Task {
+                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    await MainActor.run {
+                        isTextFieldFocused = true
+                    }
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -102,18 +100,25 @@ struct EditCounterView: View {
     }
     
     private var metricNameTextField: some View {
-        TextField("", text: $metricName)
+        TextField(metric.name, text: $metricName)
+            .textFieldStyle(.automatic)
             .focused($isTextFieldFocused)
+            .foregroundColor(.primary)
+            .textInputAutocapitalization(.words)
     }
     
     private var initialValueTextField: some View {
-        TextField("", text: $initialValue)
+        TextField("\(metric.value)", text: $initialValue)
             .keyboardType(.numberPad)
+            .textFieldStyle(.automatic)
+            .foregroundColor(.primary)
     }
     
     private var incrementByTextField: some View {
         TextField("\(metric.increment)", text: $incrementBy)
             .keyboardType(.numberPad)
+            .textFieldStyle(.automatic)
+            .foregroundColor(.primary)
     }
     
     private var metricTargetTextField: some View {
