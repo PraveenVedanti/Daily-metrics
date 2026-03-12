@@ -9,6 +9,10 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+extension Color {
+    
+}
+
 // MARK: - Add metrics view.
 
 struct AddMetricsView: View {
@@ -19,7 +23,6 @@ struct AddMetricsView: View {
     // Metric values.
     @State private var initialValue: String = "0"
     @State private var incrementBy: String = "1"
-    @State private var metricTarget: String = "0"
     
     // Metric color
     @State private var metricColor: Color = .blue
@@ -31,10 +34,6 @@ struct AddMetricsView: View {
     
     // Environment variable to dismiss sheet.
     @Environment(\.dismiss) var dismiss
-    
-    // Metric colors.
-    @State private var firstSetColors: [Color] = [.blue, .green, .yellow, .red]
-    @State private var secondSetColors: [Color] = [.teal, .brown, .orange, .gray]
     
     var body: some View {
         NavigationStack {
@@ -53,7 +52,7 @@ struct AddMetricsView: View {
                 } footer: {
                     Text(LocalizedStrings.initialValueTextFieldFooter)
                 }
-
+                
                 // Increment by section
                 Section {
                     incrementByTextField
@@ -63,20 +62,12 @@ struct AddMetricsView: View {
                     Text(LocalizedStrings.incrementByTextFieldFooter)
                 }
                 
-                // Set the target
-                Section {
-                    metricTargetTextField
-                } header: {
-                    Text("Target (Optional)")
-                } footer: {
-                    Text("Set target for your counter to track progress")
-                }
                 
                 // Color selection section.
                 Section {
                     VStack(spacing: 24) {
-                        ColorPickerView(colors: firstSetColors, selectedColor: $metricColor)
-                        ColorPickerView(colors: secondSetColors, selectedColor: $metricColor)
+                        ColorPickerView(colors: ColorToken.firstSetCounterColors, selectedColor: $metricColor)
+                        ColorPickerView(colors: ColorToken.secondSetCounterColors, selectedColor: $metricColor)
                     }
                 } header: {
                     Text(LocalizedStrings.colorSectionHeader)
@@ -89,7 +80,7 @@ struct AddMetricsView: View {
             }
             .onAppear {
                 Task {
-                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    try? await Task.sleep(nanoseconds: 100_000_000)
                     await MainActor.run {
                         isTextFieldFocused = true
                     }
@@ -106,36 +97,15 @@ struct AddMetricsView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                
+               
                 ToolbarItem(placement: .topBarTrailing) {
-                    
-                    Button("Add") {
-                        guard let initialValueInt = Int(initialValue) else {
-                            dismiss()
-                            return
-                        }
-                        guard let incrementByInt = Int(incrementBy) else {
-                            dismiss()
-                            return
-                        }
-                        
-                        // Add new metric to local database.
-                        let newMetric = Metric(
-                            name: metricName,
-                            value: initialValueInt,
-                            increment: incrementByInt,
-                            color: colorsToString(metricColor)
-                        )
-                        modelContext.insert(newMetric)
-                        
-                        do {
-                            try modelContext.save()
-                            dismiss()
-                        } catch {
-                            print("Failed to save context: \(error)")
-                            dismiss()
-                        }
+                    Button {
+                        addNewMetrixToContext()
+                    } label: {
+                        Image(systemName: "checkmark")
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(metricName.isEmpty ? .gray.opacity(0.8) : .blue)
                     .disabled(metricName.isEmpty)
                 }
             }
@@ -157,32 +127,31 @@ struct AddMetricsView: View {
             .keyboardType(.numberPad)
     }
     
-    private var metricTargetTextField: some View {
-        TextField("1", text: $metricTarget)
-            .keyboardType(.numberPad)
-    }
-    
-    private func colorsToString(_ color: Color) -> String {
-        switch color {
-        case .red:
-            return "red"
-        case .green:
-            return "green"
-        case .yellow:
-            return "yellow"
-        case .blue:
-            return "blue"
-        case .orange:
-            return "orange"
-        case .brown:
-            return "brown"
-        case .teal:
-            return "teal"
-        case .gray:
-            return "gray"
-            
-        default:
-            return "blue"
+    private func addNewMetrixToContext() {
+        guard let initialValueInt = Int(initialValue) else {
+            dismiss()
+            return
+        }
+        guard let incrementByInt = Int(incrementBy) else {
+            dismiss()
+            return
+        }
+        
+        // Add new metric to local database.
+        let newMetric = Metric(
+            name: metricName,
+            value: initialValueInt,
+            increment: incrementByInt,
+            color: ColorToken.colorsToString(metricColor)
+        )
+        modelContext.insert(newMetric)
+        
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            print("Failed to save context: \(error)")
+            dismiss()
         }
     }
 }
@@ -198,7 +167,7 @@ struct ColorPickerView: View {
     @Binding var selectedColor: Color
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 24) {
             ForEach(colors, id: \.self) { color in
                 Button(action: {
                     selectedColor = color

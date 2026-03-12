@@ -21,23 +21,18 @@ struct EditCounterView: View {
     
     @State private var initialValue: String = ""
     @State private var incrementBy: String = ""
-    @State private var metricTarget: String = ""
     
     @FocusState private var isTextFieldFocused: Bool
     
     // Environment variable to dismiss sheet.
     @Environment(\.dismiss) var dismiss
     
-    // Metric colors.
-    @State private var firstSetColors: [Color] = [.blue, .green, .yellow, .red, .orange, .brown]
-    @State private var secondSetColors: [Color] = [.cyan, .teal, .purple, .indigo, .gray, .pink]
-    
     init(metric: Metric) {
         self.metric = metric
         _metricName = State(initialValue: metric.name)
         _initialValue = State(initialValue: "\(metric.value)")
         _incrementBy = State(initialValue: "\(metric.increment)") 
-        _metricColor = State(initialValue: color(from: metric.color ?? "blue"))
+        _metricColor = State(initialValue: ColorToken.stringToColor(metric.color ?? "counterBlue"))
     }
     
     var body: some View {
@@ -59,16 +54,11 @@ struct EditCounterView: View {
                     incrementByTextField
                 }
                 
-                // Set the target
-                Section("Target (Optional)") {
-                    metricTargetTextField
-                }
-                
                 // Color selection section.
                 Section {
                     VStack(spacing: 24) {
-                        ColorPickerView(colors: firstSetColors, selectedColor: $metricColor)
-                        ColorPickerView(colors: secondSetColors, selectedColor: $metricColor)
+                        ColorPickerView(colors: ColorToken.firstSetCounterColors, selectedColor: $metricColor)
+                        ColorPickerView(colors: ColorToken.secondSetCounterColors, selectedColor: $metricColor)
                     }
                 } header: {
                     Text(LocalizedStrings.colorSectionHeader)
@@ -119,41 +109,5 @@ struct EditCounterView: View {
             .keyboardType(.numberPad)
             .textFieldStyle(.automatic)
             .foregroundColor(.primary)
-    }
-    
-    private var metricTargetTextField: some View {
-        TextField("1", text: $metricTarget)
-            .keyboardType(.numberPad)
-    }
-    
-    func color(from string: String) -> Color {
-        switch string.lowercased() {
-        case "red":
-            return .red
-        case "green":
-            return .green
-        case "yellow":
-            return .yellow
-        case "blue":
-            return .blue
-        case "orange":
-            return .orange
-        case "brown":
-            return .brown
-        case "purple":
-            return .purple
-        case "cyan":
-            return .cyan
-        case "teal":
-            return .teal
-        case "indigo":
-            return .indigo
-        case "gray":
-            return .gray
-        case "pink":
-            return .pink
-        default:
-            return .blue
-        }
     }
 }

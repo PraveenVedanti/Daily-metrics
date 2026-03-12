@@ -86,7 +86,7 @@ struct MetricsListView: View {
             .foregroundStyle(.white)
             .padding(.horizontal, 28)
             .padding(.vertical, 16)
-            .background(Color.secondary, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(Color.counterLightBlue, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 4)
             
             HStack(spacing: 5) {
@@ -107,12 +107,11 @@ struct MetricsListView: View {
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color(uiColor: .systemGroupedBackground))
                 .swipeActions {
-                    Button {
-                        selectedMetric = metric
+                    Button(role: .destructive) {
+                        print("Deleting conversation")
                     } label: {
-                        Label("Edit", systemImage: "pencil")
+                        Label("Delete", systemImage: "trash.fill")
                     }
-                    .tint(.blue)
                     
                     Button {
                     } label: {
@@ -120,11 +119,12 @@ struct MetricsListView: View {
                     }
                     .tint(.orange)
                     
-                    Button(role: .destructive) {
-                        print("Deleting conversation")
+                    Button {
+                        selectedMetric = metric
                     } label: {
-                        Label("Delete", systemImage: "trash.fill")
+                        Label("Edit", systemImage: "pencil")
                     }
+                    .tint(.blue)
                 }
         }
         .listRowSpacing(16)

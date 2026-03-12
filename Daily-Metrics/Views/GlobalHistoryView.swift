@@ -160,6 +160,10 @@ struct GlobalHistoryView: View {
             return .teal
         case "gray":
             return .gray
+        case "pink":
+            return .pink
+        case "cyan":
+            return .cyan
         default:
             return .blue
         }

@@ -52,30 +52,23 @@ public struct MetricCard: View {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(
                     colorScheme == .light
-                    ? metricColor.opacity(0.04)
-                    : metricColor.opacity(0.2)
+                    ? metricColor.opacity(0.08)
+                    : metricColor.opacity(0.18)
                 )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(
-                    colorScheme == .light
-                    ? metricColor.opacity(0.4)
-                    : metricColor.opacity(0.6),
-                    lineWidth: 0.6
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(
+                            colorScheme == .light
+                            ? metricColor.opacity(0.25)
+                            : metricColor.opacity(0.25),
+                            lineWidth: 1
+                        )
                 )
-        )
-        .shadow(
-            color: colorScheme == .light
-            ? .black.opacity(0.06)
-            : .black.opacity(0.35),
-            radius: colorScheme == .light ? 10 : 4,
-            y: colorScheme == .light ? 4 : 2
         )
     }
     
     private var metricColor: Color {
-        color(from: metric.color ?? "blue")
+        ColorToken.stringToColor(metric.color ?? "counterBlue")
     }
     
     private func updateMetric() {
@@ -86,34 +79,11 @@ public struct MetricCard: View {
         }
     }
     
-    func color(from string: String) -> Color {
-        switch string.lowercased() {
-        case "red":
-            return .red
-        case "green":
-            return .green
-        case "yellow":
-            return .yellow
-        case "blue":
-            return .blue
-        case "orange":
-            return .orange
-        case "brown":
-            return .brown
-        case "teal":
-            return .teal
-        case "gray":
-            return .gray
-        default:
-            return .blue
-        }
-    }
-    
     
     private var metricTitleView: some View {
         Text(metric.name.uppercased())
             .font(.caption2.bold())
-            .foregroundStyle(color(from: metric.color ?? "blue"))
+            .foregroundStyle(metricColor)
     }
     
     private var metricValueView: some View {
