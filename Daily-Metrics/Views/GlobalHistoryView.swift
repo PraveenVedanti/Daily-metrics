@@ -145,7 +145,7 @@ struct GlobalHistoryView: View {
     
     private var filteringPills: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
+            HStack(spacing: 4) {
                 FilterPill(title: "All", isSelected: selectedCounter == nil) {
                     selectedCounter = nil
                 }
@@ -155,15 +155,17 @@ struct GlobalHistoryView: View {
                     }
                 }
             }
+            .padding(4)
             .padding(.horizontal, 4)
-            .padding(.vertical, 4)
         }
     }
 }
 
 // MARK: - Filter pill.
-
 struct FilterPill: View {
+    
+    @Environment(\.colorScheme) var colorScheme
+
     let title: String
     let isSelected: Bool
     let action: () -> Void
@@ -171,17 +173,14 @@ struct FilterPill: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.headline)
-                .fontWeight(isSelected ? .semibold : .regular)
+                .fontWeight(.semibold)
+                .foregroundStyle(isSelected ? .primary : .secondary)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 7)
-                .background(isSelected ? Color.accentColor : Color(.secondarySystemGroupedBackground))
-                .foregroundStyle(isSelected ? .white : .primary)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .strokeBorder(isSelected ? Color.clear : Color(.separator), lineWidth: 1)
-                )
+                .background {
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(isSelected ? Color.secondary.opacity(colorScheme == .dark ? 0.4 : 0.2) : Color.clear)
+                    }
         }
         .buttonStyle(.plain)
     }
