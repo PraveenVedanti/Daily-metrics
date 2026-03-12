@@ -92,7 +92,7 @@ struct GlobalHistoryView: View {
                                 VStack(alignment: .leading) {
                                     Text(entry.metric?.name ?? "Deleted")
                                         .fontWeight(.semibold)
-                                    Text(entry.timestamp.formatted(date: .abbreviated, time: .shortened))
+                                    Text(entry.timestamp.formatted(date: .omitted, time: .shortened))
                                         .foregroundStyle(.secondary)
                                 }
                                 Spacer()
@@ -110,9 +110,15 @@ struct GlobalHistoryView: View {
                                 .font(.subheadline)
                                 
                                 // Counter value change.
-                                Text(entry.change > 0 ? "+\(entry.change)" : "\(entry.change)")
+                                Text(entry.actualChange > 0 ? "+\(entry.actualChange)" : "\(entry.actualChange)")
                                     .fontWeight(.bold)
-                                    .foregroundStyle(entry.change > 0 ? .green : .red)
+                                    .foregroundStyle(entry.actualChange > 0 ? .green : .red)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        Capsule()
+                                            .fill(entry.actualChange > 0 ? Color.green.opacity(0.15) : Color.red.opacity(0.15))
+                                    )
                             }
                         }
                     }

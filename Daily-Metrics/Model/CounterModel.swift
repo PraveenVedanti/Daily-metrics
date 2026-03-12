@@ -115,6 +115,12 @@ extension Metric {
     }
 }
 
+extension HistoryEntry {
+    var actualChange: Int {
+        valueAfter - valueBefore
+    }
+}
+
 
 // Your original schema (Counter only)
 enum CounterSchemaV1: VersionedSchema {
