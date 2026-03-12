@@ -18,6 +18,8 @@ final class Metric {
     var color: String?
     var createdAt: Date
     
+    var sortOrder: Int = 0
+    
     @Relationship(deleteRule: .cascade, inverse: \HistoryEntry.metric)
     var history: [HistoryEntry] = []
 

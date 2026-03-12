@@ -38,10 +38,7 @@ struct MetricsListView: View {
     @AppStorage("hasSeenSwipeTip") private var hasSeenSwipeTip = false
     
     // Query to fetch counters list.
-    @Query(sort: \Metric.name, order: .reverse)
-    
-    // List of metrics created.
-    private var metrics: [Metric]
+    @Query(sort: \Metric.sortOrder) var metrics: [Metric]
     
     var body: some View {
         NavigationStack {
@@ -50,6 +47,9 @@ struct MetricsListView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                        addMetricsButton
+                    }
+                    ToolbarItem(placement: .topBarLeading) {
+                        EditButton()
                     }
                 }
                 .sheet(isPresented: $showAddMetricsSheet) {
@@ -117,33 +117,43 @@ struct MetricsListView: View {
     
     private var listContent: some View {
         ZStack(alignment: .bottom) {
-            List(metrics) { metric in
-                MetricCard(metric: metric)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
-                    .listRowBackground(Color(uiColor: .systemGroupedBackground))
-                    .swipeActions {
-                        Button {
-                            metricToDelete = metric
-                            showDeleteAlert = true
-                        } label: {
-                            Label("Delete", systemImage: "trash")
+            List {
+                ForEach(metrics) { metric in
+                    MetricCard(metric: metric)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
+                        .listRowBackground(Color(uiColor: .systemGroupedBackground))
+                        .swipeActions {
+                            Button {
+                                metricToDelete = metric
+                                showDeleteAlert = true
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .tint(.red)
+                            
+                            Button {
+                            } label: {
+                                Label("Reset", systemImage: "arrow.counterclockwise")
+                            }
+                            .tint(.orange.opacity(0.6))
+                            
+                            Button {
+                                selectedMetric = metric
+                            } label: {
+                                Label("Edit", systemImage: "pencil")
+                            }
+                            .tint(Color.secondary)
                         }
-                        .tint(.red)
-                        
-                        Button {
-                        } label: {
-                            Label("Reset", systemImage: "arrow.counterclockwise")
-                        }
-                        .tint(.orange)
-                        
-                        Button {
-                            selectedMetric = metric
-                        } label: {
-                            Label("Edit", systemImage: "pencil")
-                        }
-                        .tint(.blue)
+                }
+                .onMove { from, to in
+                    var reordered = metrics
+                    reordered.move(fromOffsets: from, toOffset: to)
+                    for (index, metric) in reordered.enumerated() {
+                        metric.sortOrder = index
                     }
+                    try? modelContext.save()
+                }
             }
             .listRowSpacing(16)
             .scrollContentBackground(.hidden)

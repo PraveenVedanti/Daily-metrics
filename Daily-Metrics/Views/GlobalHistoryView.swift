@@ -128,15 +128,6 @@ struct GlobalHistoryView: View {
             .listStyle(.insetGrouped)
             .navigationTitle("History")
             .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        
-                    } label: {
-                        Image(systemName: "trash")
-                    }
-                }
-            }
         }
     }
     
