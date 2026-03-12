@@ -9,16 +9,24 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+// MARK: - Metrics list view.
+
 struct MetricsListView: View {
     
     // Show add metrics view.
     @State private var showAddMetricsSheet = false
     
-    // Show global history view.
-    @State private var showGlobalHistorySheet = false
+    @State private var showEditMetricsSheet = false
     
-    // show settings view.
-    @State private var showSettingsSheet = false
+    @Environment(\.colorScheme) var colorScheme
+   
+    @State private var selectedMetric: Metric?
+    
+    @State private var showDeleteAlert = false
+    @State private var metricToDelete: Metric? = nil
+    
+    // Model context for local data.
+    @Environment(\.modelContext) private var modelContext
     
     // Query to fetch counters list.
     @Query(sort: \Metric.name, order: .reverse)
@@ -29,20 +37,17 @@ struct MetricsListView: View {
     var body: some View {
         NavigationStack {
             homeContent
-                .navigationTitle("Counters")
+                .navigationTitle(metrics.isEmpty ? "" : "Counters")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        addMetricsButton
-                    }
-                    ToolbarItem(placement: .topBarLeading) {
-                        moreButton
+                       addMetricsButton
                     }
                 }
                 .sheet(isPresented: $showAddMetricsSheet) {
                     AddMetricsView()
                 }
-                .fullScreenCover(isPresented: $showGlobalHistorySheet) {
-                    GlobalHistoryView()
+                .sheet(item: $selectedMetric) { metric in
+                    EditCounterView(metric: metric)
                 }
         }
     }
@@ -87,7 +92,7 @@ struct MetricsListView: View {
             .foregroundStyle(.white)
             .padding(.horizontal, 28)
             .padding(.vertical, 16)
-            .background(Color.secondary, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(Color.counterLightBlue, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 4)
             
             HStack(spacing: 5) {
@@ -107,43 +112,42 @@ struct MetricsListView: View {
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color(uiColor: .systemGroupedBackground))
-                .contextMenu {
+                .swipeActions {
                     Button {
-                        
+                        metricToDelete = metric
+                        showDeleteAlert = true
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    .tint(.red)
+                    
+                    Button {
+                    } label: {
+                        Label("Reset", systemImage: "arrow.counterclockwise")
+                    }
+                    .tint(.orange)
+                    
+                    Button {
+                        selectedMetric = metric
                     } label: {
                         Label("Edit", systemImage: "pencil")
                     }
+                    .tint(.blue)
                 }
         }
         .listRowSpacing(16)
         .scrollContentBackground(.hidden)
         .listRowSeparator(.hidden)
-        .buttonStyle(.borderless)
         .background(Color(uiColor: .systemGroupedBackground))
-    }
-    
-    private var historyButton: some View {
-        Button {
-            showGlobalHistorySheet = true
-        } label: {
-            Label("History", systemImage: "clock")
-        }
-    }
-    
-    private var settingsButton: some View {
-        Button {
-            showSettingsSheet = true
-        } label: {
-            Label("Settings", systemImage: "gear")
-        }
-    }
-    
-    private var moreButton: some View {
-        Menu {
-            settingsButton
-            historyButton
-        } label: {
-            Image(systemName: "ellipsis")
+        .alert("Delete \(metricToDelete?.name ?? "Counter")?", isPresented: $showDeleteAlert) {
+            Button("Delete", role: .destructive) {
+                if let metric = metricToDelete {
+                    deleteMetric(metric)
+                }
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This will permanently delete the counter and all its history.")
         }
     }
     
@@ -152,6 +156,16 @@ struct MetricsListView: View {
             showAddMetricsSheet.toggle()
         } label: {
             Image(systemName: "plus")
+        }
+    }
+    
+    private func deleteMetric(_ metric: Metric) {
+        modelContext.delete(metric)
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to delete metric: \(error)")
         }
     }
 }

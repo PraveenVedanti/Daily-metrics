@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+// MARK: - Metric card.
+
 public struct MetricCard: View {
     
     // Metric object.
@@ -17,6 +19,10 @@ public struct MetricCard: View {
     // Model context to fetch data.
     @Environment(\.modelContext) private var modelContext
     
+    @State private var showEditMetricsSheet = false
+    
+    @Environment(\.colorScheme) var colorScheme
+    
     init(
         metric: Metric,
     ) {
@@ -24,39 +30,45 @@ public struct MetricCard: View {
     }
     
     public var body: some View {
-        HStack(alignment: .center) {
+        
+        HStack {
+            decrementButton
+                .frame(maxWidth: .infinity, alignment: .leading)
+
             
-            HStack(spacing: 16) {
-                Rectangle()
-                    .fill(color(from: metric.color ?? "blue"))
-                    .frame(width: 4)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    metricTitleView
-                    metricValueView
-                }
+            VStack(spacing: 8) {
+                metricTitleView
+                metricValueView
             }
+            .frame(maxWidth: .infinity)
+            .multilineTextAlignment(.center)
             
-            Spacer()
-                .frame(height: 12)
-            
-            // Stepper Section
-            StepperView(
-                buttonHeight: 40,
-                color: color(from: metric.color ?? "blue")
-            ) {
-                metric.increment(in: modelContext)
-                updateMetric()
-            } onMinusTap: {
-                metric.decrement(in: modelContext)
-                updateMetric()
-            }
+            incrementButton
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(.vertical, 16)
-        .padding(.trailing, 20)
-        .background(Color(uiColor: .secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+        .padding(.horizontal, 16)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(
+                    colorScheme == .light
+                    ? metricColor.opacity(0.08)
+                    : metricColor.opacity(0.18)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(
+                            colorScheme == .light
+                            ? metricColor.opacity(0.25)
+                            : metricColor.opacity(0.25),
+                            lineWidth: 1
+                        )
+                )
+        )
+    }
+    
+    private var metricColor: Color {
+        ColorToken.stringToColor(metric.color ?? "counterBlue")
     }
     
     private func updateMetric() {
@@ -67,52 +79,57 @@ public struct MetricCard: View {
         }
     }
     
-    func color(from string: String) -> Color {
-        switch string.lowercased() {
-        case "red":
-            return .red
-        case "green":
-            return .green
-        case "yellow":
-            return .yellow
-        case "blue":
-            return .blue
-        case "orange":
-            return .orange
-        case "brown":
-            return .brown
-        case "purple":
-            return .purple
-        case "cyan":
-            return .cyan
-        case "teal":
-            return .teal
-        case "indigo":
-            return .indigo
-        case "gray":
-            return .gray
-        case "pink":
-            return .pink
-        default:
-            return .blue
-        }
-    }
-    
     
     private var metricTitleView: some View {
         Text(metric.name.uppercased())
             .font(.caption2.bold())
-            .foregroundStyle(color(from: metric.color ?? "blue"))
+            .foregroundStyle(metricColor)
     }
     
     private var metricValueView: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 4) {
-            Text("\(metric.value)")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
-                .contentTransition(.numericText())
-            Text(metric.unit ?? "")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        Text("\(metric.value)")
+            .font(.system(size: 34, weight: .bold, design: .rounded))
+            .contentTransition(.numericText())
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: metric.value)
+    }
+    
+    private var incrementButton: some View {
+        Button {
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
+            
+            metric.increment(in: modelContext)
+            updateMetric()
+        } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
+                .frame(width: 48, height: 48)
+                .background(metricColor.opacity(colorScheme == .dark ?  0.6 : 0.8))
+                .clipShape(Circle())
         }
+        .buttonStyle(.borderless)
+    }
+    
+    private var decrementButton: some View {
+        Button {
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
+            
+            metric.decrement(in: modelContext)
+            updateMetric()
+        } label: {
+            Image(systemName: "minus")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(metricColor.opacity(0.8))
+                .frame(width: 48, height: 48)
+                .background(Color.clear)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(metricColor.opacity(0.6), lineWidth: 0.4)
+                )
+        }
+        .buttonStyle(.borderless)
     }
 }

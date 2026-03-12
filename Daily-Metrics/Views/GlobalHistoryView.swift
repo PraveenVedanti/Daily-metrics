@@ -8,36 +8,38 @@
 import Foundation
 import SwiftUI
 import SwiftData
+
+// MARK: - Global history view.
  
 struct GlobalHistoryView: View {
     
     // Environment variable to dismiss screen
     @Environment(\.dismiss) var dismiss
-
+    
     @Query(sort: \HistoryEntry.timestamp, order: .reverse)
     
     // All history list.
     var allHistory: [HistoryEntry]
-
+    
     // Selected counter state variable.
     @State private var selectedCounter: String? = nil
-
+    
     // Sorted list of counter names.
     var counterNames: [String] {
         let names = allHistory.compactMap { $0.metric?.name }
         return Array(Set(names)).sorted()
     }
-
+    
     // Filtered history list of counters
     var filteredHistory: [HistoryEntry] {
         guard let selected = selectedCounter else { return allHistory }
         return allHistory.filter { $0.metric?.name == selected }
     }
-
+    
     var groupedHistory: [(title: String, entries: [HistoryEntry])] {
         let calendar = Calendar.current
         let now = Date()
-
+        
         let grouped = Dictionary(grouping: filteredHistory) { entry -> String in
             if calendar.isDateInToday(entry.timestamp) {
                 return "Today"
@@ -49,7 +51,7 @@ struct GlobalHistoryView: View {
                 return entry.timestamp.formatted(.dateTime.month(.wide).year())
             }
         }
-
+        
         let order = ["Today", "Yesterday"]
         return grouped
             .map { (title: $0.key, entries: $0.value) }
@@ -62,10 +64,10 @@ struct GlobalHistoryView: View {
                 return (a.entries.first?.timestamp ?? .distantPast) > (b.entries.first?.timestamp ?? .distantPast)
             }
     }
-
+    
     var body: some View {
         NavigationStack {
-           
+            
             List {
                 
                 // Filter Pills
@@ -74,16 +76,16 @@ struct GlobalHistoryView: View {
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
                 .listRowBackground(Color.clear)
-
+                
                 // History Sections
                 ForEach(groupedHistory, id: \.title) { section in
                     Section(header: Text(section.title)) {
                         ForEach(section.entries) { entry in
                             HStack(spacing: 12) {
-                               
+                                
                                 // Color of the counter
                                 Circle()
-                                    .fill(color(from: entry.metric?.color ?? "blue"))
+                                    .fill(color(from: entry.metric?.color ?? "counterBlue"))
                                     .frame(width: 16, height: 16)
                                 
                                 // Counter name and date.
@@ -109,12 +111,6 @@ struct GlobalHistoryView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .topBarLeading) {
                     Button {
                         
                     } label: {
@@ -123,6 +119,10 @@ struct GlobalHistoryView: View {
                 }
             }
         }
+    }
+    
+    private func calculateIncrement(metric: Metric) -> Int {
+        return metric.value * metric.increment
     }
     
     private var filteringPills: some View {
@@ -156,11 +156,21 @@ struct GlobalHistoryView: View {
             return .orange
         case "brown":
             return .brown
+        case "teal":
+            return .teal
+        case "gray":
+            return .gray
+        case "pink":
+            return .pink
+        case "cyan":
+            return .cyan
         default:
             return .blue
         }
     }
 }
+
+// MARK: - Filter pill.
 
 struct FilterPill: View {
     let title: String

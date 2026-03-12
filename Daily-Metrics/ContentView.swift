@@ -11,6 +11,23 @@ import SwiftData
 struct ContentView: View {
 
     var body: some View {
-        MetricsListView()
+        TabView {
+            MetricsListView()
+                .tabItem {
+                    Label("Counters", systemImage: "list.bullet.rectangle")
+                }
+            
+            GlobalHistoryView()
+                .tabItem {
+                    Label("History", systemImage: "clock.arrow.circlepath")
+                }
+            
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
+            
+            
+        }
     }
 }

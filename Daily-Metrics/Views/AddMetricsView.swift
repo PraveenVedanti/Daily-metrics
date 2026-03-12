@@ -9,20 +9,23 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+extension Color {
+    
+}
+
+// MARK: - Add metrics view.
+
 struct AddMetricsView: View {
     
-    // Metric name and descriptions.
+    // Metric name
     @State private var metricName: String = ""
-    @State private var metricDescription: String = ""
-    @State private var metricUnit: String = ""
     
     // Metric values.
     @State private var initialValue: String = "0"
     @State private var incrementBy: String = "1"
-    @State private var metricTarget: String = "0"
     
     // Metric color
-    @State private var metricColor: Color = .blue
+    @State private var metricColor: Color = .counterBlue
     
     // Model context for local data.
     @Environment(\.modelContext) private var modelContext
@@ -32,10 +35,6 @@ struct AddMetricsView: View {
     // Environment variable to dismiss sheet.
     @Environment(\.dismiss) var dismiss
     
-    // Metric colors.
-    @State private var firstSetColors: [Color] = [.blue, .green, .yellow, .red, .orange, .brown]
-    @State private var secondSetColors: [Color] = [.cyan, .teal, .purple, .indigo, .gray, .pink]
-    
     var body: some View {
         NavigationStack {
             List {
@@ -43,8 +42,6 @@ struct AddMetricsView: View {
                 // Counter name section
                 Section {
                     metricNameTextField
-                    metricDescriptionTextField
-                    metricUnitTextField
                 }
                 
                 // Initial value section
@@ -55,7 +52,7 @@ struct AddMetricsView: View {
                 } footer: {
                     Text(LocalizedStrings.initialValueTextFieldFooter)
                 }
-
+                
                 // Increment by section
                 Section {
                     incrementByTextField
@@ -65,20 +62,12 @@ struct AddMetricsView: View {
                     Text(LocalizedStrings.incrementByTextFieldFooter)
                 }
                 
-                // Set the target
-                Section {
-                    metricTargetTextField
-                } header: {
-                    Text("Target (Optional)")
-                } footer: {
-                    Text("Set target for your counter to track progress")
-                }
                 
                 // Color selection section.
                 Section {
                     VStack(spacing: 24) {
-                        ColorPickerView(colors: firstSetColors, selectedColor: $metricColor)
-                        ColorPickerView(colors: secondSetColors, selectedColor: $metricColor)
+                        ColorPickerView(colors: ColorToken.firstSetCounterColors, selectedColor: $metricColor)
+                        ColorPickerView(colors: ColorToken.secondSetCounterColors, selectedColor: $metricColor)
                     }
                 } header: {
                     Text(LocalizedStrings.colorSectionHeader)
@@ -90,7 +79,12 @@ struct AddMetricsView: View {
                 isTextFieldFocused = false
             }
             .onAppear {
-                isTextFieldFocused = true
+                Task {
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                    await MainActor.run {
+                        isTextFieldFocused = true
+                    }
+                }
             }
             .navigationTitle(LocalizedStrings.newCounterTitle)
             .navigationBarTitleDisplayMode(.inline)
@@ -103,41 +97,15 @@ struct AddMetricsView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                
+               
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                      
-                        guard let initialValueInt = Int(initialValue) else {
-                            dismiss()
-                            return
-                        }
-                        guard let incrementByInt = Int(incrementBy) else {
-                            dismiss()
-                            return
-                        }
-                        
-                        // Add new metric to local database.
-                        let newMetric = Metric(
-                            name: metricName,
-                            desc: metricDescription,
-                            unit: metricUnit,
-                            value: initialValueInt,
-                            increment: incrementByInt,
-                            color: colorsToString(metricColor)
-                        )
-                        modelContext.insert(newMetric)
-                        
-                        do {
-                            try modelContext.save()
-                            dismiss()
-                        } catch {
-                            print("Failed to save context: \(error)")
-                            dismiss()
-                        }
+                        addNewMetrixToContext()
                     } label: {
                         Image(systemName: "checkmark")
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.borderedProminent)
+                    .tint(metricName.isEmpty ? .gray.opacity(0.8) : .blue)
                     .disabled(metricName.isEmpty)
                 }
             }
@@ -147,14 +115,6 @@ struct AddMetricsView: View {
     private var metricNameTextField: some View {
         TextField(LocalizedStrings.metricNameTextFieldPlaceholder, text: $metricName)
             .focused($isTextFieldFocused)
-    }
-    
-    private var metricDescriptionTextField: some View {
-        TextField(LocalizedStrings.metricDescriptionTextFieldPlaceholder, text: $metricDescription)
-    }
-    
-    private var metricUnitTextField: some View {
-        TextField(LocalizedStrings.unitTextFieldPlaceholder, text: $metricUnit)
     }
     
     private var initialValueTextField: some View {
@@ -167,44 +127,36 @@ struct AddMetricsView: View {
             .keyboardType(.numberPad)
     }
     
-    private var metricTargetTextField: some View {
-        TextField("1", text: $metricTarget)
-            .keyboardType(.numberPad)
-    }
-    
-    private func colorsToString(_ color: Color) -> String {
-        switch color {
-        case .red:
-            return "red"
-        case .green:
-            return "green"
-        case .yellow:
-            return "yellow"
-        case .blue:
-            return "blue"
-        case .orange:
-            return "orange"
-        case .brown:
-            return "brown"
-        case .purple:
-            return "purple"
-        case .cyan:
-            return "cyan"
-        case .teal:
-            return "teal"
-        case .indigo:
-            return "indigo"
-        case .gray:
-            return "gray"
-        case .pink:
-            return "pink"
-            
-        default:
-            return "blue"
+    private func addNewMetrixToContext() {
+        guard let initialValueInt = Int(initialValue) else {
+            dismiss()
+            return
+        }
+        guard let incrementByInt = Int(incrementBy) else {
+            dismiss()
+            return
+        }
+        
+        // Add new metric to local database.
+        let newMetric = Metric(
+            name: metricName,
+            value: initialValueInt,
+            increment: incrementByInt,
+            color: ColorToken.colorsToString(metricColor)
+        )
+        modelContext.insert(newMetric)
+        
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            print("Failed to save context: \(error)")
+            dismiss()
         }
     }
 }
 
+// MARK: - Colour picker view.
 
 struct ColorPickerView: View {
     
@@ -215,7 +167,7 @@ struct ColorPickerView: View {
     @Binding var selectedColor: Color
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 24) {
             ForEach(colors, id: \.self) { color in
                 Button(action: {
                     selectedColor = color
@@ -238,6 +190,8 @@ struct ColorPickerView: View {
     }
 }
 
+// MARK: - Localized strings.
+
 struct LocalizedStrings {
     static let initialValueTextFiledHeader = NSLocalizedString("Initial value", comment: "Initial value text field header")
     static let initialValueTextFieldFooter = NSLocalizedString("Enter initial value (default is 0)", comment: "Initial value text field footer")
@@ -249,8 +203,8 @@ struct LocalizedStrings {
     static let colorSectionFooter = NSLocalizedString("Choose a color for your counter", comment: "Color section footer")
     
     static let metricNameTextFieldPlaceholder = NSLocalizedString("Counter name (Required)", comment: "Counter name text field placeholder")
-    static let metricDescriptionTextFieldPlaceholder = NSLocalizedString("what are you tracking?(Optional)", comment: "Counter description text field")
-    static let unitTextFieldPlaceholder = NSLocalizedString("Unit (Optional)", comment: "Unit text field placeholder")
     
     static let newCounterTitle = NSLocalizedString("New Counter", comment: "New counter navigation title")
+    
+    static let counterValueTextFiledHeader = NSLocalizedString("Counter value", comment: "Counter value text field header")
 }
