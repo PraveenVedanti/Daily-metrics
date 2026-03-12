@@ -22,6 +22,12 @@ struct MetricsListView: View {
    
     @State private var selectedMetric: Metric?
     
+    @State private var showDeleteAlert = false
+    @State private var metricToDelete: Metric? = nil
+    
+    // Model context for local data.
+    @Environment(\.modelContext) private var modelContext
+    
     // Query to fetch counters list.
     @Query(sort: \Metric.name, order: .reverse)
     
@@ -31,7 +37,7 @@ struct MetricsListView: View {
     var body: some View {
         NavigationStack {
             homeContent
-                .navigationTitle("Counters")
+                .navigationTitle(metrics.isEmpty ? "" : "Counters")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                        addMetricsButton
@@ -107,11 +113,13 @@ struct MetricsListView: View {
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(Color(uiColor: .systemGroupedBackground))
                 .swipeActions {
-                    Button(role: .destructive) {
-                        print("Deleting conversation")
+                    Button {
+                        metricToDelete = metric
+                        showDeleteAlert = true
                     } label: {
-                        Label("Delete", systemImage: "trash.fill")
+                        Label("Delete", systemImage: "trash")
                     }
+                    .tint(.red)
                     
                     Button {
                     } label: {
@@ -131,6 +139,16 @@ struct MetricsListView: View {
         .scrollContentBackground(.hidden)
         .listRowSeparator(.hidden)
         .background(Color(uiColor: .systemGroupedBackground))
+        .alert("Delete \(metricToDelete?.name ?? "Counter")?", isPresented: $showDeleteAlert) {
+            Button("Delete", role: .destructive) {
+                if let metric = metricToDelete {
+                    deleteMetric(metric)
+                }
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This will permanently delete the counter and all its history.")
+        }
     }
     
     private var addMetricsButton: some View {
@@ -138,6 +156,16 @@ struct MetricsListView: View {
             showAddMetricsSheet.toggle()
         } label: {
             Image(systemName: "plus")
+        }
+    }
+    
+    private func deleteMetric(_ metric: Metric) {
+        modelContext.delete(metric)
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to delete metric: \(error)")
         }
     }
 }

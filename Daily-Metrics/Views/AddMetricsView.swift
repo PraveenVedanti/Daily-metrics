@@ -25,7 +25,7 @@ struct AddMetricsView: View {
     @State private var incrementBy: String = "1"
     
     // Metric color
-    @State private var metricColor: Color = .blue
+    @State private var metricColor: Color = .counterBlue
     
     // Model context for local data.
     @Environment(\.modelContext) private var modelContext

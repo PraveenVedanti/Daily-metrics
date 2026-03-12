@@ -27,8 +27,8 @@ extension Color {
 
 struct ColorToken {
     static let firstSetCounterColors: [Color] = [
-        .counterRed, .counterOrange, .counterYellow,
-        .counterGreen, .counterLightBlue, .counterBlue
+        .counterBlue, .counterOrange, .counterYellow,
+        .counterGreen, .counterLightBlue, .counterRed
     ]
 
     static let secondSetCounterColors: [Color] = [

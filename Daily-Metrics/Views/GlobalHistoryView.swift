@@ -85,7 +85,7 @@ struct GlobalHistoryView: View {
                                 
                                 // Color of the counter
                                 Circle()
-                                    .fill(color(from: entry.metric?.color ?? "blue"))
+                                    .fill(color(from: entry.metric?.color ?? "counterBlue"))
                                     .frame(width: 16, height: 16)
                                 
                                 // Counter name and date.

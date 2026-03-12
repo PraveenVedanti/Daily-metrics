@@ -25,7 +25,7 @@ final class Metric {
         name: String,
         value: Int = 0,
         increment: Int = 1,
-        color: String? = "blue"
+        color: String? = "counterBlue"
     ) {
         self.id = UUID()
         self.name = name
