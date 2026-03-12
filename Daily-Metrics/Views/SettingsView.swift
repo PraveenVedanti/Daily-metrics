@@ -5,12 +5,12 @@
 //  Created by Praveen Kumar Vedanti on 3/10/26.
 //
 
+import AVFoundation
+import SwiftData
 import SwiftUI
 import StoreKit
-import AVFoundation
 
 struct SettingsView: View {
-
 
 // MARK: - App Storage
 @AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = true
@@ -18,6 +18,11 @@ struct SettingsView: View {
 
 // MARK: - State
 @State private var showClearHistoryConfirmation = false
+    
+@Environment(\.modelContext) private var modelContext
+@Query var allHistory: [HistoryEntry]
+
+@State private var showClearHistoryAlert = false
 
 // MARK: - Constants
 private let contactEmail = "praveenvedanti11@gmail.com"
@@ -44,10 +49,10 @@ var body: some View {
             // MARK: Data
             Section("Data") {
                 Button(role: .destructive) {
-                    showClearHistoryConfirmation = true
+                    showClearHistoryAlert = true
                 } label: {
                     Label("Clear All History", systemImage: "trash")
-                        .foregroundColor(.primary)
+                        .foregroundColor(allHistory.isEmpty ? .secondary : .red)
                 }
             }
             
@@ -81,62 +86,56 @@ var body: some View {
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.large)
-        .confirmationDialog(
-            "Clear All History",
-            isPresented: $showClearHistoryConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button("Clear History", role: .destructive) {
+        .alert("Clear All History", isPresented: $showClearHistoryAlert) {
+            Button("Clear", role: .destructive) {
                 clearAllHistory()
             }
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) { }
         } message: {
-            Text("This will permanently delete all counter history. This action cannot be undone.")
+            Text("This will permanently delete the counter and all its history.")
         }
     }
 }
 
 // MARK: - Helpers
 
-private var appVersion: String {
-    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
-    let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
-    return "\(version) (\(build))"
-}
-
-private func triggerHaptic() {
-    guard hapticsEnabled else { return }
-    let generator = UIImpactFeedbackGenerator(style: .medium)
-    generator.impactOccurred()
-}
-
-private func playSoundIfEnabled() {
-    guard soundEnabled else { return }
-    AudioServicesPlaySystemSound(1104) // Standard tap sound
-}
-
-private func sendEmail() {
-    let urlString = "mailto:\(contactEmail)?subject=CountUp%20Feedback"
-    guard let url = URL(string: urlString) else { return }
-    UIApplication.shared.open(url)
-}
-
-private func requestReview() {
-    if let scene = UIApplication.shared.connectedScenes.first(where: {
-        $0.activationState == .foregroundActive
-    }) as? UIWindowScene {
-        SKStoreReviewController.requestReview(in: scene)
+    private var appVersion: String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        return "\(version) (\(build))"
     }
-}
+    
+    private func triggerHaptic() {
+        guard hapticsEnabled else { return }
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+    }
+    
+    private func playSoundIfEnabled() {
+        guard soundEnabled else { return }
+        AudioServicesPlaySystemSound(1104) // Standard tap sound
+    }
+    
+    private func sendEmail() {
+        let urlString = "mailto:\(contactEmail)?subject=CountUp%20Feedback"
+        guard let url = URL(string: urlString) else { return }
+        UIApplication.shared.open(url)
+    }
+    
+    private func requestReview() {
+        if let scene = UIApplication.shared.connectedScenes.first(where: {
+            $0.activationState == .foregroundActive
+        }) as? UIWindowScene {
+            SKStoreReviewController.requestReview(in: scene)
+        }
+    }
 
-private func clearAllHistory() {
-    // TODO: Replace with your actual data clearing logic
-    // e.g. viewModel.clearAllHistory()
-    //      context.delete(...)  ← if using CoreData / SwiftData
-    print("History cleared")
-}
-
-
+    private func clearAllHistory() {
+        allHistory.forEach {
+            modelContext.delete($0)
+        }
+        try? modelContext.save()
+    }
 }
 
 // MARK: - Haptic Helper (call this anywhere in the app)

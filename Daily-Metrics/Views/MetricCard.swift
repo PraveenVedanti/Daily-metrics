@@ -22,6 +22,13 @@ public struct MetricCard: View {
     // Color scheme environment variable.
     @Environment(\.colorScheme) var colorScheme
     
+    private let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
+    @Environment(\.editMode) private var editMode  // ← Add here
+        
+    private var isEditing: Bool {
+        editMode?.wrappedValue.isEditing ?? false
+    }
+    
     init(
         metric: Metric,
     ) {
@@ -45,6 +52,9 @@ public struct MetricCard: View {
                 incrementButton
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
+        }
+        .onAppear {
+            impactGenerator.prepare()
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 12)
@@ -98,11 +108,11 @@ public struct MetricCard: View {
     
     private var incrementButton: some View {
         Button {
-            let generator = UIImpactFeedbackGenerator(style: .medium)
-            generator.impactOccurred()
+           
+            impactGenerator.impactOccurred()
             
             metric.increment(in: modelContext)
-            updateMetric()
+           // updateMetric()
         } label: {
             Image(systemName: "plus")
                 .font(.system(size: 16, weight: .bold))
@@ -111,16 +121,16 @@ public struct MetricCard: View {
                 .background(metricColor.opacity(colorScheme == .dark ?  0.6 : 0.8))
                 .clipShape(Circle())
         }
+        .disabled(isEditing)
         .buttonStyle(.borderless)
     }
     
     private var decrementButton: some View {
         Button {
-            let generator = UIImpactFeedbackGenerator(style: .medium)
-            generator.impactOccurred()
+            impactGenerator.impactOccurred()
             
             metric.decrement(in: modelContext)
-            updateMetric()
+           // updateMetric()
         } label: {
             Image(systemName: "minus")
                 .font(.system(size: 16, weight: .bold))
@@ -133,6 +143,7 @@ public struct MetricCard: View {
                         .stroke(metricColor.opacity(0.6), lineWidth: 0.4)
                 )
         }
+        .disabled(isEditing)
         .buttonStyle(.borderless)
     }
 }

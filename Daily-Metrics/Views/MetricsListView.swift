@@ -133,6 +133,7 @@ struct MetricsListView: View {
                             .tint(.red)
                             
                             Button {
+                                reset(in: modelContext, metric: metric)
                             } label: {
                                 Label("Reset", systemImage: "arrow.counterclockwise")
                             }
@@ -152,7 +153,9 @@ struct MetricsListView: View {
                     for (index, metric) in reordered.enumerated() {
                         metric.sortOrder = index
                     }
-                    try? modelContext.save()
+                    DispatchQueue.main.async {
+                        try? modelContext.save()
+                    }
                 }
             }
             .listRowSpacing(16)
@@ -198,6 +201,13 @@ struct MetricsListView: View {
         } catch {
             print("Failed to delete metric: \(error)")
         }
+    }
+    
+    func reset(in context: ModelContext, metric: Metric) {
+        let before = metric.value
+        metric.value = 0
+        let entry = HistoryEntry(change: 0, valueBefore: before, valueAfter: 0, metric: metric)
+        context.insert(entry)
     }
 }
 

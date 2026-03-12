@@ -83,6 +83,10 @@ struct GlobalHistoryView: View {
                         ForEach(section.entries) { entry in
                             HStack(spacing: 12) {
                                 
+                                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                    .fill(ColorToken.stringToColor(entry.metric?.color ?? "counterBlue"))
+                                    .frame(width: 4)
+                                
                                 // Counter name and date.
                                 VStack(alignment: .leading, spacing: 6) {
                                     Text(entry.metric?.name ?? "Deleted")
@@ -92,7 +96,7 @@ struct GlobalHistoryView: View {
                                 }
                                 Spacer()
                                 
-                                VStack(alignment: .center, spacing: 6) {
+                                VStack(alignment: .trailing, spacing: 6) {
                                     // Counter value change.
                                     Text(entry.actualChange > 0 ? "+\(entry.actualChange)" : "\(entry.actualChange)")
                                         .fontWeight(.bold)
@@ -174,7 +178,7 @@ struct FilterPill: View {
                 .padding(.vertical, 8)
                 .background {
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(isSelected ? Color.secondary.opacity(colorScheme == .dark ? 0.2 : 0.1) : Color.clear)
+                        .fill(isSelected ? Color.secondary.opacity(colorScheme == .dark ? 0.4 : 0.1) : Color.clear)
                     }
         }
         .buttonStyle(.plain)
