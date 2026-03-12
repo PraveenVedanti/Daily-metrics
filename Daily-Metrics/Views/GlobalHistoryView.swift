@@ -85,7 +85,7 @@ struct GlobalHistoryView: View {
                                 
                                 // Color of the counter
                                 Circle()
-                                    .fill(color(from: entry.metric?.color ?? "counterBlue"))
+                                    .fill(ColorToken.stringToColor(entry.metric?.color ?? "counterBlue"))
                                     .frame(width: 16, height: 16)
                                 
                                 // Counter name and date.
@@ -96,6 +96,18 @@ struct GlobalHistoryView: View {
                                         .foregroundStyle(.secondary)
                                 }
                                 Spacer()
+                                
+                                // Before → After
+                                HStack(spacing: 4) {
+                                    Text("\(entry.valueBefore)")
+                                        .foregroundStyle(.secondary)
+                                    Image(systemName: "arrow.right")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text("\(entry.valueAfter)")
+                                        .fontWeight(.semibold)
+                                }
+                                .font(.subheadline)
                                 
                                 // Counter value change.
                                 Text(entry.change > 0 ? "+\(entry.change)" : "\(entry.change)")
@@ -139,33 +151,6 @@ struct GlobalHistoryView: View {
             }
             .padding(.horizontal, 4)
             .padding(.vertical, 4)
-        }
-    }
-    
-    func color(from string: String) -> Color {
-        switch string.lowercased() {
-        case "red":
-            return .red
-        case "green":
-            return .green
-        case "yellow":
-            return .yellow
-        case "blue":
-            return .blue
-        case "orange":
-            return .orange
-        case "brown":
-            return .brown
-        case "teal":
-            return .teal
-        case "gray":
-            return .gray
-        case "pink":
-            return .pink
-        case "cyan":
-            return .cyan
-        default:
-            return .blue
         }
     }
 }

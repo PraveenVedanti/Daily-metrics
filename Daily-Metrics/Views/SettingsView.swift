@@ -15,7 +15,6 @@ struct SettingsView: View {
 // MARK: - App Storage
 @AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = true
 @AppStorage("soundEnabled") private var soundEnabled: Bool = true
-@AppStorage("confirmBeforeReset") private var confirmBeforeReset: Bool = true
 
 // MARK: - State
 @State private var showClearHistoryConfirmation = false
@@ -38,14 +37,6 @@ var body: some View {
                 
                 Toggle(isOn: $soundEnabled) {
                     Label("Sounds", systemImage: "speaker.wave.2")
-                        .foregroundColor(.primary)
-                }
-            }
-            
-            // MARK: Behavior
-            Section("Behavior") {
-                Toggle(isOn: $confirmBeforeReset) {
-                    Label("Confirm Before Reset", systemImage: "arrow.counterclockwise")
                         .foregroundColor(.primary)
                 }
             }

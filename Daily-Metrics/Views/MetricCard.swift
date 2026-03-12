@@ -31,20 +31,27 @@ public struct MetricCard: View {
     
     public var body: some View {
         
-        HStack {
-            decrementButton
-                .frame(maxWidth: .infinity, alignment: .leading)
-
+        VStack(spacing: 8) {
             
-            VStack(spacing: 8) {
-                metricTitleView
+            Text(metric.name)
+                .font(.caption.bold())
+                .kerning(1.5)
+                .textCase(.uppercase)
+                .foregroundStyle(metricColor)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .lineLimit(1)
+            
+            HStack {
+                decrementButton
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
                 metricValueView
+                    .frame(maxWidth: .infinity)
+                    .multilineTextAlignment(.center)
+                
+                incrementButton
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            .frame(maxWidth: .infinity)
-            .multilineTextAlignment(.center)
-            
-            incrementButton
-                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .padding(.vertical, 16)
         .padding(.horizontal, 16)
@@ -81,8 +88,9 @@ public struct MetricCard: View {
     
     
     private var metricTitleView: some View {
-        Text(metric.name.uppercased())
+        Text(metric.name)
             .font(.caption2.bold())
+            .kerning(1.5)
             .foregroundStyle(metricColor)
     }
     
