@@ -16,17 +16,26 @@ struct MetricsListView: View {
     // Show add metrics view.
     @State private var showAddMetricsSheet = false
     
+    // Show edit metrics view.
     @State private var showEditMetricsSheet = false
     
+    // Color scheme environment variable
     @Environment(\.colorScheme) var colorScheme
    
+    // Selected metric state variable.
     @State private var selectedMetric: Metric?
     
+    // Alert shown before metric delete.
     @State private var showDeleteAlert = false
+   
+    // Metric to be deleted state variable
     @State private var metricToDelete: Metric? = nil
     
     // Model context for local data.
     @Environment(\.modelContext) private var modelContext
+    
+    // User defaults to track if tip is shown.
+    @AppStorage("hasSeenSwipeTip") private var hasSeenSwipeTip = false
     
     // Query to fetch counters list.
     @Query(sort: \Metric.name, order: .reverse)
@@ -107,47 +116,60 @@ struct MetricsListView: View {
     }
     
     private var listContent: some View {
-        List(metrics) { metric in
-            MetricCard(metric: metric)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color(uiColor: .systemGroupedBackground))
-                .swipeActions {
-                    Button {
-                        metricToDelete = metric
-                        showDeleteAlert = true
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+        ZStack(alignment: .bottom) {
+            List(metrics) { metric in
+                MetricCard(metric: metric)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
+                    .listRowBackground(Color(uiColor: .systemGroupedBackground))
+                    .swipeActions {
+                        Button {
+                            metricToDelete = metric
+                            showDeleteAlert = true
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .tint(.red)
+                        
+                        Button {
+                        } label: {
+                            Label("Reset", systemImage: "arrow.counterclockwise")
+                        }
+                        .tint(.orange)
+                        
+                        Button {
+                            selectedMetric = metric
+                        } label: {
+                            Label("Edit", systemImage: "pencil")
+                        }
+                        .tint(.blue)
                     }
-                    .tint(.red)
-                    
-                    Button {
-                    } label: {
-                        Label("Reset", systemImage: "arrow.counterclockwise")
-                    }
-                    .tint(.orange)
-                    
-                    Button {
-                        selectedMetric = metric
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
-                    }
-                    .tint(.blue)
-                }
-        }
-        .listRowSpacing(16)
-        .scrollContentBackground(.hidden)
-        .listRowSeparator(.hidden)
-        .background(Color(uiColor: .systemGroupedBackground))
-        .alert("Delete \(metricToDelete?.name ?? "Counter")?", isPresented: $showDeleteAlert) {
-            Button("Delete", role: .destructive) {
-                if let metric = metricToDelete {
-                    deleteMetric(metric)
-                }
             }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("This will permanently delete the counter and all its history.")
+            .listRowSpacing(16)
+            .scrollContentBackground(.hidden)
+            .listRowSeparator(.hidden)
+            .background(Color(uiColor: .systemGroupedBackground))
+            .alert("Delete \(metricToDelete?.name ?? "Counter") ?", isPresented: $showDeleteAlert) {
+                Button("Delete", role: .destructive) {
+                    if let metric = metricToDelete {
+                        deleteMetric(metric)
+                    }
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("This will permanently delete the counter and all its history.")
+            }
+            
+            // Swipe Tip
+            if metrics.count == 1 && !hasSeenSwipeTip {
+                SwipeTipView {
+                    withAnimation(.spring()) {
+                        hasSeenSwipeTip = true
+                    }
+                }
+                .padding(.bottom, 16)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
     }
     
@@ -161,11 +183,58 @@ struct MetricsListView: View {
     
     private func deleteMetric(_ metric: Metric) {
         modelContext.delete(metric)
-        
         do {
             try modelContext.save()
         } catch {
             print("Failed to delete metric: \(error)")
         }
+    }
+}
+
+
+struct SwipeTipView: View {
+    let onDismiss: () -> Void
+    
+    // Color scheme environment variable
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Animated swipe icon
+            Image(systemName: "hand.draw")
+                .font(.title2)
+                .foregroundStyle(.blue)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Swipe counter card more options")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                Text("Edit, reset or delete your counter")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            
+            Spacer()
+            
+            // Dismiss
+            Button {
+                onDismiss()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+                    .padding(6)
+                    .background(Circle().fill(Color(.systemFill)))
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(colorScheme == .dark ? .secondarySystemBackground : .systemBackground))
+                .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
+        )
+        .padding(.horizontal, 16)
     }
 }

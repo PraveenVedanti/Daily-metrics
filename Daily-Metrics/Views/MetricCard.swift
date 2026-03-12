@@ -19,8 +19,7 @@ public struct MetricCard: View {
     // Model context to fetch data.
     @Environment(\.modelContext) private var modelContext
     
-    @State private var showEditMetricsSheet = false
-    
+    // Color scheme environment variable.
     @Environment(\.colorScheme) var colorScheme
     
     init(
@@ -33,13 +32,7 @@ public struct MetricCard: View {
         
         VStack(spacing: 8) {
             
-            Text(metric.name)
-                .font(.caption.bold())
-                .kerning(1.5)
-                .textCase(.uppercase)
-                .foregroundStyle(metricColor)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .lineLimit(1)
+            metricTitleView
             
             HStack {
                 decrementButton
@@ -53,8 +46,8 @@ public struct MetricCard: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
-        .padding(.vertical, 16)
-        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 12)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(
@@ -89,9 +82,11 @@ public struct MetricCard: View {
     
     private var metricTitleView: some View {
         Text(metric.name)
-            .font(.caption2.bold())
+            .font(.caption.bold())
             .kerning(1.5)
             .foregroundStyle(metricColor)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .lineLimit(1)
     }
     
     private var metricValueView: some View {

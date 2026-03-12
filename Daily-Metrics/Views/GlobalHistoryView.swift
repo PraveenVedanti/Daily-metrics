@@ -74,7 +74,7 @@ struct GlobalHistoryView: View {
                 Section {
                     filteringPills
                 }
-                .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
+                .listRowInsets(EdgeInsets())
                 .listRowBackground(Color.clear)
                 
                 // History Sections
@@ -83,13 +83,8 @@ struct GlobalHistoryView: View {
                         ForEach(section.entries) { entry in
                             HStack(spacing: 12) {
                                 
-                                // Color of the counter
-                                Circle()
-                                    .fill(ColorToken.stringToColor(entry.metric?.color ?? "counterBlue"))
-                                    .frame(width: 16, height: 16)
-                                
                                 // Counter name and date.
-                                VStack(alignment: .leading) {
+                                VStack(alignment: .leading, spacing: 6) {
                                     Text(entry.metric?.name ?? "Deleted")
                                         .fontWeight(.semibold)
                                     Text(entry.timestamp.formatted(date: .omitted, time: .shortened))
@@ -97,28 +92,34 @@ struct GlobalHistoryView: View {
                                 }
                                 Spacer()
                                 
-                                // Before → After
-                                HStack(spacing: 4) {
-                                    Text("\(entry.valueBefore)")
-                                        .foregroundStyle(.secondary)
-                                    Image(systemName: "arrow.right")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                    Text("\(entry.valueAfter)")
-                                        .fontWeight(.semibold)
+                                VStack(alignment: .center, spacing: 6) {
+                                    // Counter value change.
+                                    Text(entry.actualChange > 0 ? "+\(entry.actualChange)" : "\(entry.actualChange)")
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(entry.actualChange > 0 ? .green : .red)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(
+                                            Capsule()
+                                                .fill(entry.actualChange > 0 ? Color.green.opacity(0.15) : Color.red.opacity(0.15))
+                                        )
+                                    
+                                    
+                                    // Before → After
+                                    HStack(spacing: 4) {
+                                        Text("\(entry.valueBefore)")
+                                            .foregroundStyle(.secondary)
+                                        Image(systemName: "arrow.right")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        Text("\(entry.valueAfter)")
+                                            .fontWeight(.regular)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    .font(.subheadline)
+                                    
+                                    
                                 }
-                                .font(.subheadline)
-                                
-                                // Counter value change.
-                                Text(entry.actualChange > 0 ? "+\(entry.actualChange)" : "\(entry.actualChange)")
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(entry.actualChange > 0 ? .green : .red)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(
-                                        Capsule()
-                                            .fill(entry.actualChange > 0 ? Color.green.opacity(0.15) : Color.red.opacity(0.15))
-                                    )
                             }
                         }
                     }
@@ -138,6 +139,7 @@ struct GlobalHistoryView: View {
             }
         }
     }
+    
     
     private func calculateIncrement(metric: Metric) -> Int {
         return metric.value * metric.increment
@@ -173,13 +175,15 @@ struct FilterPill: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .fontWeight(.semibold)
+                .font(.system(.subheadline, design: .rounded))
+                .fontWeight(isSelected ? .semibold : .regular)
                 .foregroundStyle(isSelected ? .primary : .secondary)
+                .tracking(0.2)
                 .padding(.horizontal, 14)
-                .padding(.vertical, 7)
+                .padding(.vertical, 8)
                 .background {
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(isSelected ? Color.secondary.opacity(colorScheme == .dark ? 0.4 : 0.2) : Color.clear)
+                        .fill(isSelected ? Color.secondary.opacity(colorScheme == .dark ? 0.2 : 0.1) : Color.clear)
                     }
         }
         .buttonStyle(.plain)
