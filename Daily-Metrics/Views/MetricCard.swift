@@ -89,7 +89,6 @@ public struct MetricCard: View {
         }
     }
     
-    
     private var metricTitleView: some View {
         Text(metric.name)
             .font(.caption.bold())
@@ -109,12 +108,14 @@ public struct MetricCard: View {
     private var incrementButton: some View {
         Button {
            
-            impactGenerator.impactOccurred()
-            
+            // If haptics is enabled, apply it to button tap.
+            let enabled = UserDefaults.standard.bool(forKey: "hapticsEnabled")
+            if enabled {
+                impactGenerator.impactOccurred()
+            }
             metric.increment(in: modelContext)
-           // updateMetric()
         } label: {
-            Image(systemName: "plus")
+            Image(systemName: DMIcons.plusIcon)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
                 .frame(width: 48, height: 48)
@@ -127,12 +128,15 @@ public struct MetricCard: View {
     
     private var decrementButton: some View {
         Button {
-            impactGenerator.impactOccurred()
-            
+            // If haptics is enabled, apply it to button tap.
+            let enabled = UserDefaults.standard.bool(forKey: "hapticsEnabled")
+            if enabled {
+                impactGenerator.impactOccurred()
+            }
+           
             metric.decrement(in: modelContext)
-           // updateMetric()
         } label: {
-            Image(systemName: "minus")
+            Image(systemName: DMIcons.minusIcon)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(metricColor.opacity(0.8))
                 .frame(width: 48, height: 48)

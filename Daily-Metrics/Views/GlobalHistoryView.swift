@@ -79,7 +79,41 @@ struct GlobalHistoryView: View {
     }
     
     private var zeroStateContent: some View {
-        Text("Hello")
+        VStack(spacing: 16) {
+            // Dashed clock icon
+            
+            ZStack {
+                // Dashed border circle
+                Circle()
+                    .strokeBorder(
+                        style: StrokeStyle(
+                            lineWidth: 2,
+                            dash: [6, 4]
+                        )
+                    )
+                    .foregroundColor(Color.accentColor)
+                    .frame(width: 64, height: 64)
+                
+                
+                // Clock icon
+                Image(systemName: "clock")
+                    .font(.system(size: 26, weight: .light))
+                    .foregroundColor(Color.accentColor)
+            }
+            .padding(.bottom, 4)
+            
+            // Title
+            Text("No history yet")
+                .font(.system(size: 22, weight: .bold, design: .default))
+                .foregroundStyle(.primary)
+            
+            // Subtitle
+            Text("Start using a counter and your activity will appear here.")
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(3)
+        }
     }
     
     private var historyContent: some View {

@@ -49,7 +49,9 @@ struct MetricsListView: View {
                        addMetricsButton
                     }
                     ToolbarItem(placement: .topBarLeading) {
-                        EditButton()
+                        if !metrics.isEmpty {
+                            EditButton()
+                        }
                     }
                 }
                 .sheet(isPresented: $showAddMetricsSheet) {
@@ -91,21 +93,21 @@ struct MetricsListView: View {
                 showAddMetricsSheet.toggle()
             }, label: {
                 HStack(spacing: 8) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 17, weight: .medium))
-                    Text("New Counter")
+                    Image(systemName: DMIcons.plusIcon)
+                        .font(.system(size: 16, weight: .medium))
+                    Text(DMStrings.newCountersButtonTitle)
                         .font(.system(size: 16, weight: .semibold))
                 }
             })
             .buttonStyle(.plain)
             .foregroundStyle(.white)
-            .padding(.horizontal, 28)
+            .padding(.horizontal, 16)
             .padding(.vertical, 16)
-            .background(Color.counterLightBlue, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 4)
             
             HStack(spacing: 5) {
-                Image(systemName: "info.circle")
+                Image(systemName: DMIcons.infoIcon)
                     .font(.system(size: 13))
                 Text("You can also tap + in the top right")
                     .font(.system(size: 13))
@@ -128,21 +130,21 @@ struct MetricsListView: View {
                                 metricToDelete = metric
                                 showDeleteAlert = true
                             } label: {
-                                Label("Delete", systemImage: "trash")
+                                Label("Delete", systemImage: DMIcons.trashIcon)
                             }
                             .tint(.red)
                             
                             Button {
                                 reset(in: modelContext, metric: metric)
                             } label: {
-                                Label("Reset", systemImage: "arrow.counterclockwise")
+                                Label("Reset", systemImage: DMIcons.resetIcon)
                             }
                             .tint(.orange.opacity(0.6))
                             
                             Button {
                                 selectedMetric = metric
                             } label: {
-                                Label("Edit", systemImage: "pencil")
+                                Label("Edit", systemImage: DMIcons.editIcon)
                             }
                             .tint(Color.secondary)
                         }
@@ -190,7 +192,7 @@ struct MetricsListView: View {
         Button {
             showAddMetricsSheet.toggle()
         } label: {
-            Image(systemName: "plus")
+            Image(systemName: DMIcons.plusIcon)
         }
     }
     
@@ -221,15 +223,15 @@ struct SwipeTipView: View {
     var body: some View {
         HStack(spacing: 12) {
             // Animated swipe icon
-            Image(systemName: "hand.draw")
+            Image(systemName: DMIcons.handDrawIcon)
                 .font(.title2)
                 .foregroundStyle(.blue)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("Swipe counter card more options")
+                Text(DMStrings.swipeTipViewTitle)
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                Text("Edit, reset or delete your counter")
+                Text(DMStrings.swipeTipViewSubTitle)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -240,7 +242,7 @@ struct SwipeTipView: View {
             Button {
                 onDismiss()
             } label: {
-                Image(systemName: "xmark")
+                Image(systemName: DMIcons.crossMarkIcon)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(.secondary)

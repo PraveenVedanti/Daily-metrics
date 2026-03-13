@@ -26,4 +26,21 @@ struct DMStrings {
     // Edit counter view
     static let counterCurrentValueHeader = NSLocalizedString("Current value", comment: "Counter current value text")
     static let editCounterSheetTitle = NSLocalizedString("Edit counter", comment: "Edit counter sheet title")
+    
+    // Metrics list view
+    static let swipeTipViewTitle = NSLocalizedString("Swipe counter card more options", comment: "Swipe tip view title")
+    static let swipeTipViewSubTitle = NSLocalizedString("Edit, reset or delete your counter", comment: "Swipe tip view sub title")
+    static let countersNavigationTitle = NSLocalizedString("Counters", comment: "Counters navigation title")
+    static let newCountersButtonTitle = NSLocalizedString("New Counter", comment: "New counter title")
+}
+
+struct DMIcons {
+    static let plusIcon = "plus"
+    static let minusIcon = "minus"
+    static let handDrawIcon = "hand.draw"
+    static let crossMarkIcon = "xmark"
+    static let trashIcon = "trash"
+    static let resetIcon = "arrow.counterclockwise"
+    static let editIcon = "pencil"
+    static let infoIcon = "info.circle"
 }

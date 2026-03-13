@@ -51,7 +51,7 @@ var body: some View {
                 Button(role: .destructive) {
                     showClearHistoryAlert = true
                 } label: {
-                    Label("Clear All History", systemImage: "trash")
+                    Label("Clear All History", systemImage: DMIcons.trashIcon)
                         .foregroundColor(allHistory.isEmpty ? .secondary : .red)
                 }
             }
@@ -136,15 +136,6 @@ var body: some View {
         }
         try? modelContext.save()
     }
-}
-
-// MARK: - Haptic Helper (call this anywhere in the app)
-
-func triggerHapticIfEnabled(style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
-    let enabled = UserDefaults.standard.bool(forKey: "hapticsEnabled")
-    guard enabled else { return }
-    let generator = UIImpactFeedbackGenerator(style: style)
-    generator.impactOccurred()
 }
 
 // MARK: - Sound Helper (call this anywhere in the app)

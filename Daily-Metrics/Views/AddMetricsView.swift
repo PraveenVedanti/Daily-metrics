@@ -78,14 +78,14 @@ struct AddMetricsView: View {
             }.onTapGesture {
                 isTextFieldFocused = false
             }
-            .onAppear {
-                Task {
-                    try? await Task.sleep(nanoseconds: 100_000_000)
-                    await MainActor.run {
-                        isTextFieldFocused = true
-                    }
-                }
-            }
+//            .onAppear {
+//                Task {
+//                    try? await Task.sleep(nanoseconds: 100_000_000)
+//                    await MainActor.run {
+//                        isTextFieldFocused = true
+//                    }
+//                }
+//            }
             .navigationTitle(DMStrings.newCounterTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
