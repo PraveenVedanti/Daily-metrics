@@ -5,6 +5,7 @@
 //  Created by Praveen Kumar Vedanti on 3/2/26.
 //
 
+import AVFoundation
 import Foundation
 import SwiftUI
 import SwiftData
@@ -113,6 +114,12 @@ public struct MetricCard: View {
             if enabled {
                 impactGenerator.impactOccurred()
             }
+            
+            let soundEnabled = UserDefaults.standard.bool(forKey: "soundEnabled")
+            if soundEnabled {
+                AudioServicesPlaySystemSound(1104)
+            }
+            
             metric.increment(in: modelContext)
         } label: {
             Image(systemName: DMIcons.plusIcon)
@@ -132,6 +139,11 @@ public struct MetricCard: View {
             let enabled = UserDefaults.standard.bool(forKey: "hapticsEnabled")
             if enabled {
                 impactGenerator.impactOccurred()
+            }
+            
+            let soundEnabled = UserDefaults.standard.bool(forKey: "soundEnabled")
+            if soundEnabled {
+                AudioServicesPlaySystemSound(1104)
             }
            
             metric.decrement(in: modelContext)

@@ -5,7 +5,6 @@
 //  Created by Praveen Kumar Vedanti on 3/10/26.
 //
 
-import AVFoundation
 import SwiftData
 import SwiftUI
 import StoreKit
@@ -14,7 +13,7 @@ struct SettingsView: View {
 
 // MARK: - App Storage
 @AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = true
-@AppStorage("soundEnabled") private var soundEnabled: Bool = true
+@AppStorage("soundEnabled") private var soundEnabled: Bool = false
 
 // MARK: - State
 @State private var showClearHistoryConfirmation = false
@@ -77,6 +76,7 @@ var body: some View {
             Section {
                 HStack {
                     Label("Version", systemImage: "info.circle")
+                        .foregroundColor(.primary)
                     Spacer()
                     Text(appVersion)
                         .foregroundColor(.secondary)
@@ -101,19 +101,13 @@ var body: some View {
 
     private var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
-        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
-        return "\(version) (\(build))"
+        return "\(version)"
     }
     
     private func triggerHaptic() {
         guard hapticsEnabled else { return }
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
-    }
-    
-    private func playSoundIfEnabled() {
-        guard soundEnabled else { return }
-        AudioServicesPlaySystemSound(1104) // Standard tap sound
     }
     
     private func sendEmail() {
@@ -136,16 +130,4 @@ var body: some View {
         }
         try? modelContext.save()
     }
-}
-
-// MARK: - Sound Helper (call this anywhere in the app)
-// System sound IDs:
-//   1104 — soft tap (increment)
-//   1105 — tick (decrement)
-//   1057 — pop (reset)
-
-func playSoundIfEnabled(soundID: SystemSoundID = 1104) {
-    let enabled = UserDefaults.standard.bool(forKey: "soundEnabled")
-    guard enabled else { return }
-    AudioServicesPlaySystemSound(soundID)
 }
