@@ -13,6 +13,8 @@ import SwiftData
  
 struct GlobalHistoryView: View {
     
+    @Query(sort: \Metric.sortOrder) var metrics: [Metric]
+    
     // Environment variable to dismiss screen
     @Environment(\.dismiss) var dismiss
     
@@ -68,71 +70,81 @@ struct GlobalHistoryView: View {
     var body: some View {
         NavigationStack {
             
-            List {
-                
-                // Filter Pills
-                Section {
-                    filteringPills
-                }
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-                
-                // History Sections
-                ForEach(groupedHistory, id: \.title) { section in
-                    Section(header: Text(section.title)) {
-                        ForEach(section.entries) { entry in
-                            HStack(spacing: 12) {
+            if counterNames.isEmpty {
+                zeroStateContent
+            } else {
+                historyContent
+            }
+        }
+    }
+    
+    private var zeroStateContent: some View {
+        Text("Hello")
+    }
+    
+    private var historyContent: some View {
+        List {
+            
+            // Filter Pills
+            Section {
+                filteringPills
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+            
+            // History Sections
+            ForEach(groupedHistory, id: \.title) { section in
+                Section(header: Text(section.title)) {
+                    ForEach(section.entries) { entry in
+                        HStack(spacing: 12) {
+                            
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                .fill(ColorToken.stringToColor(entry.metric?.color ?? "counterBlue"))
+                                .frame(width: 6)
+                            
+                            // Counter name and date.
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(entry.metric?.name ?? "Deleted")
+                                    .fontWeight(.semibold)
+                                Text(entry.timestamp.formatted(date: .omitted, time: .shortened))
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            
+                            VStack(alignment: .trailing, spacing: 6) {
+                                // Counter value change.
+                                Text(entry.actualChange > 0 ? "+\(entry.actualChange)" : "\(entry.actualChange)")
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(entry.actualChange > 0 ? .green : .red)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        Capsule()
+                                            .fill(entry.actualChange > 0 ? Color.green.opacity(0.15) : Color.red.opacity(0.15))
+                                    )
                                 
-                                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                    .fill(ColorToken.stringToColor(entry.metric?.color ?? "counterBlue"))
-                                    .frame(width: 4)
                                 
-                                // Counter name and date.
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text(entry.metric?.name ?? "Deleted")
-                                        .fontWeight(.semibold)
-                                    Text(entry.timestamp.formatted(date: .omitted, time: .shortened))
+                                // Before → After
+                                HStack(spacing: 4) {
+                                    Text("\(entry.valueBefore)")
+                                        .foregroundStyle(.secondary)
+                                    Image(systemName: "arrow.right")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text("\(entry.valueAfter)")
+                                        .fontWeight(.regular)
                                         .foregroundStyle(.secondary)
                                 }
-                                Spacer()
-                                
-                                VStack(alignment: .trailing, spacing: 6) {
-                                    // Counter value change.
-                                    Text(entry.actualChange > 0 ? "+\(entry.actualChange)" : "\(entry.actualChange)")
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(entry.actualChange > 0 ? .green : .red)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(
-                                            Capsule()
-                                                .fill(entry.actualChange > 0 ? Color.green.opacity(0.15) : Color.red.opacity(0.15))
-                                        )
-                                    
-                                    
-                                    // Before → After
-                                    HStack(spacing: 4) {
-                                        Text("\(entry.valueBefore)")
-                                            .foregroundStyle(.secondary)
-                                        Image(systemName: "arrow.right")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                        Text("\(entry.valueAfter)")
-                                            .fontWeight(.regular)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    .font(.subheadline)
-                                    
-                                    
-                                }
+                                .font(.subheadline)
                             }
                         }
                     }
                 }
             }
-            .listStyle(.insetGrouped)
-            .navigationTitle("History")
-            .navigationBarTitleDisplayMode(.large)
         }
+        .listStyle(.insetGrouped)
+        .navigationTitle("History")
+        .navigationBarTitleDisplayMode(.large)
     }
     
     
@@ -142,13 +154,13 @@ struct GlobalHistoryView: View {
     
     private var filteringPills: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 4) {
+            HStack(spacing: 12) {
                 FilterPill(title: "All", isSelected: selectedCounter == nil) {
                     selectedCounter = nil
                 }
-                ForEach(counterNames, id: \.self) { name in
-                    FilterPill(title: name, isSelected: selectedCounter == name) {
-                        selectedCounter = (selectedCounter == name) ? nil : name
+                ForEach(metrics) { metric in
+                    FilterPill(title: metric.name, isSelected: selectedCounter == metric.name, color: ColorToken.stringToColor(metric.color ?? "counterBlue")) {
+                        selectedCounter = (selectedCounter == metric.name) ? nil : metric.name
                     }
                 }
             }
@@ -162,24 +174,48 @@ struct GlobalHistoryView: View {
 struct FilterPill: View {
     
     @Environment(\.colorScheme) var colorScheme
-
+    
     let title: String
     let isSelected: Bool
+    let color: Color?
     let action: () -> Void
-
+    
+    init(
+        title: String,
+        isSelected: Bool,
+        color: Color? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.isSelected = isSelected
+        self.action = action
+        self.color = color
+    }
+    
     var body: some View {
         Button(action: action) {
-            Text(title)
-                .font(.system(.subheadline, design: .rounded))
-                .fontWeight(isSelected ? .semibold : .regular)
-                .foregroundStyle(isSelected ? .primary : .secondary)
-                .tracking(0.2)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(isSelected ? Color.secondary.opacity(colorScheme == .dark ? 0.4 : 0.1) : Color.clear)
-                    }
+            HStack(spacing: 8) {
+                
+                if let color {
+                    Circle()
+                        .fill(color)
+                        .frame(width: 12)
+                }
+                
+                Text(title)
+                    .font(.system(.subheadline, design: .rounded))
+                    .fontWeight(isSelected ? .semibold : .regular)
+                    .foregroundStyle(isSelected ? .primary : .secondary)
+                    .tracking(0.2)
+                   // .padding(.horizontal, 4)
+                    .padding(.vertical, 8)
+            }
+            .padding(.horizontal, 8)
+        }
+        .background {
+            RoundedRectangle(cornerRadius: 20)
+                .fill(isSelected ? Color.secondary.opacity(colorScheme == .dark ? 0.4 : 0.1) : Color.clear)
+                .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
         }
         .buttonStyle(.plain)
     }

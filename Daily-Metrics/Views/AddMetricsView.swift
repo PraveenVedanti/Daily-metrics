@@ -48,18 +48,18 @@ struct AddMetricsView: View {
                 Section {
                     initialValueTextField
                 } header: {
-                    Text(LocalizedStrings.initialValueTextFiledHeader)
+                    Text(DMStrings.initialValueTextFiledHeader)
                 } footer: {
-                    Text(LocalizedStrings.initialValueTextFieldFooter)
+                    Text(DMStrings.initialValueTextFieldFooter)
                 }
                 
                 // Increment by section
                 Section {
                     incrementByTextField
                 } header: {
-                    Text(LocalizedStrings.incrementByTextFieldHeader)
+                    Text(DMStrings.incrementByTextFieldHeader)
                 } footer: {
-                    Text(LocalizedStrings.incrementByTextFieldFooter)
+                    Text(DMStrings.incrementByTextFieldFooter)
                 }
                 
                 
@@ -70,9 +70,9 @@ struct AddMetricsView: View {
                         ColorPickerView(colors: ColorToken.secondSetCounterColors, selectedColor: $metricColor)
                     }
                 } header: {
-                    Text(LocalizedStrings.colorSectionHeader)
+                    Text(DMStrings.colorSectionHeader)
                 } footer: {
-                    Text(LocalizedStrings.colorSectionFooter)
+                    Text(DMStrings.colorSectionFooter)
                 }
                 
             }.onTapGesture {
@@ -86,7 +86,7 @@ struct AddMetricsView: View {
                     }
                 }
             }
-            .navigationTitle(LocalizedStrings.newCounterTitle)
+            .navigationTitle(DMStrings.newCounterTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -113,7 +113,7 @@ struct AddMetricsView: View {
     }
     
     private var metricNameTextField: some View {
-        TextField(LocalizedStrings.metricNameTextFieldPlaceholder, text: $metricName)
+        TextField(DMStrings.metricNameTextFieldPlaceholder, text: $metricName)
             .focused($isTextFieldFocused)
     }
     

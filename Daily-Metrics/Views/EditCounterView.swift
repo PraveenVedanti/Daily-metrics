@@ -49,12 +49,12 @@ struct EditCounterView: View {
                 }
                 
                 // Counter value section
-                Section("Counter value") {
+                Section(DMStrings.counterCurrentValueHeader) {
                     initialValueTextField
                 }
 
                 // Increment by section
-                Section(LocalizedStrings.incrementByTextFieldHeader) {
+                Section(DMStrings.incrementByTextFieldHeader) {
                     incrementByTextField
                 }
                 
@@ -65,9 +65,9 @@ struct EditCounterView: View {
                         ColorPickerView(colors: ColorToken.secondSetCounterColors, selectedColor: $metricColor)
                     }
                 } header: {
-                    Text(LocalizedStrings.colorSectionHeader)
+                    Text(DMStrings.colorSectionHeader)
                 } footer: {
-                    Text(LocalizedStrings.colorSectionFooter)
+                    Text(DMStrings.colorSectionFooter)
                 }
             }
             .onAppear {
@@ -97,7 +97,7 @@ struct EditCounterView: View {
                     .buttonStyle(.plain)
                 }
             }
-            .navigationTitle("Edit counter")
+            .navigationTitle(DMStrings.editCounterSheetTitle)
             .navigationBarTitleDisplayMode(.inline)
         }
     }
