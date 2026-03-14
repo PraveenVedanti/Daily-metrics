@@ -20,6 +20,7 @@ struct EditCounterView: View {
     // Metric name and descriptions.
     @State private var metricName: String = ""
     
+    // Metric values
     @State private var initialValue: String = ""
     @State private var incrementBy: String = ""
     
@@ -76,18 +77,24 @@ struct EditCounterView: View {
                     Button {
                         dismiss()
                     } label: {
-                        Image(systemName: "xmark")
+                        Image(systemName: DMIcons.crossMark)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Dismiss")
+                    .accessibilityHint("Discards changes and closes the sheet")
+                    .accessibilityAddTraits(.isButton)
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                         updateMetric(self.metric)
                     } label: {
-                        Image(systemName: "checkmark")
+                        Image(systemName: DMIcons.checkMark)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Save")
+                    .accessibilityHint("Saves changes to \(metric.name)")
+                    .accessibilityAddTraits(.isButton)
                 }
             }
             .navigationTitle(DMStrings.editCounterSheetTitle)

@@ -15,18 +15,17 @@ struct SettingsView: View {
 @AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = true
 @AppStorage("soundEnabled") private var soundEnabled: Bool = false
 
-// MARK: - State
-@State private var showClearHistoryConfirmation = false
-    
+// Model context.
 @Environment(\.modelContext) private var modelContext
+    
+// All history
 @Query var allHistory: [HistoryEntry]
-
+    
+// Alert shown before history clear.
 @State private var showClearHistoryAlert = false
 
 // MARK: - Constants
-private let contactEmail = "praveenvedanti11@gmail.com"
-private let privacyPolicyURL = "https://your-privacy-policy-url.com"
-private let appStoreID = "YOUR_APP_STORE_ID" // Replace with your App Store ID
+private let contactEmail = "praveen.apps@yahoo.com"
 
 var body: some View {
     NavigationStack {
@@ -87,10 +86,10 @@ var body: some View {
         .navigationTitle(DMStrings.settingsNavigationTitle)
         .navigationBarTitleDisplayMode(.large)
         .alert(DMStrings.clearHistoryAlertTitle, isPresented: $showClearHistoryAlert) {
-            Button("Clear", role: .destructive) {
+            Button(DMStrings.clearButtonTitle, role: .destructive) {
                 clearAllHistory()
             }
-            Button("Cancel", role: .cancel) { }
+            Button(DMStrings.cancelButtonTitle, role: .cancel) { }
         } message: {
             Text(DMStrings.clearHistoryAlertMessage)
         }

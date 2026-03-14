@@ -9,10 +9,6 @@ import Foundation
 import SwiftUI
 import SwiftData
 
-extension Color {
-    
-}
-
 // MARK: - Add metrics view.
 
 struct AddMetricsView: View {
@@ -87,6 +83,9 @@ struct AddMetricsView: View {
                         Image(systemName: DMIcons.crossMark)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Dismiss")
+                        .accessibilityHint("Closes this sheet")
+                        .accessibilityAddTraits(.isButton)
                 }
                
                 ToolbarItem(placement: .confirmationAction) {
@@ -98,6 +97,9 @@ struct AddMetricsView: View {
                     .buttonStyle(.borderedProminent)
                     .tint(metricName.isEmpty ? .gray.opacity(0.8) : .blue)
                     .disabled(metricName.isEmpty)
+                    .accessibilityLabel("Create counter")
+                    .accessibilityHint("create new counter and dismiss sheet")
+                    .accessibilityAddTraits(.isButton)
                 }
             }
         }

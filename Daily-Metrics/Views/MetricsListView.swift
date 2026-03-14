@@ -111,6 +111,9 @@ struct MetricsListView: View {
             .padding(.vertical, 16)
             .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 4)
+            .accessibilityLabel(DMStrings.newCountersButtonTitle)
+            .accessibilityHint("Opens a sheet to add a new metric")
+            .accessibilityAddTraits(.isButton)
             
             HStack(spacing: 5) {
                 Image(systemName: DMIcons.info)
@@ -132,57 +135,34 @@ struct MetricsListView: View {
                         .listRowInsets(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
                         .listRowBackground(Color(uiColor: .systemGroupedBackground))
                         .contextMenu {
-                            
-                            // Edit button
-                            Button {
+                            metricActionButton(.edit, metric: metric) {
                                 selectedMetric = metric
-                            } label: {
-                                Label(DMStrings.editButtonTitle, systemImage: DMIcons.edit)
                             }
-                            
-                            // Reset button
-                            Button {
+
+                            metricActionButton(.reset, metric: metric, tint: .orange.opacity(0.6)) {
                                 metricToReset = metric
                                 showResetAlert = true
-                            } label: {
-                                Label(DMStrings.resetButtonTitle, systemImage: DMIcons.reset)
                             }
-                            
-                            // Delete button
-                            Button(role: .destructive) {
+
+                            metricActionButton(.delete, metric: metric, role: .destructive, tint: .red) {
                                 metricToDelete = metric
                                 showDeleteAlert = true
-                            } label: {
-                                Label(DMStrings.deleteButtonTitle, systemImage: DMIcons.trash)
                             }
                         }
                         .swipeActions {
-                            
-                            // Delete button
-                            Button {
+                            metricActionButton(.delete, metric: metric, role: .destructive, tint: .red) {
                                 metricToDelete = metric
                                 showDeleteAlert = true
-                            } label: {
-                                Label(DMStrings.deleteButtonTitle, systemImage: DMIcons.trash)
                             }
-                            .tint(.red)
-                            
-                            // Reset button
-                            Button {
+
+                            metricActionButton(.reset, metric: metric, tint: .orange.opacity(0.6)) {
                                 metricToReset = metric
                                 showResetAlert = true
-                            } label: {
-                                Label(DMStrings.resetButtonTitle, systemImage: DMIcons.reset)
                             }
-                            .tint(.orange.opacity(0.6))
-                            
-                            // Edit button
-                            Button {
+
+                            metricActionButton(.edit, metric: metric, tint: .secondary) {
                                 selectedMetric = metric
-                            } label: {
-                                Label(DMStrings.editButtonTitle, systemImage: DMIcons.edit)
                             }
-                            .tint(Color.secondary)
                         }
                 }
                 .onMove { from, to in
@@ -224,15 +204,73 @@ struct MetricsListView: View {
 
             // Swipe Tip
             if metrics.count == 1 && !hasSeenSwipeTip {
-                SwipeTipView {
-                    withAnimation(.spring()) {
-                        hasSeenSwipeTip = true
+                VStack {
+                    SwipeTipView() {
+                        withAnimation(.spring()) {
+                            hasSeenSwipeTip = true
+                        }
                     }
+                    .padding(.bottom, 16)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
-                .padding(.bottom, 16)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+    }
+    
+    enum MetricAction {
+        case edit
+        case reset
+        case delete
+
+        var title: String {
+            switch self {
+            case .edit: return DMStrings.editButtonTitle
+            case .reset: return DMStrings.resetButtonTitle
+            case .delete: return DMStrings.deleteButtonTitle
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .edit: return DMIcons.edit
+            case .reset: return DMIcons.reset
+            case .delete: return DMIcons.trash
+            }
+        }
+
+        var hint: String {
+            switch self {
+            case .edit: return "Edit this counter"
+            case .reset: return "This will reset the counter back to 0"
+            case .delete: return "This will permanently delete the counter"
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func metricActionButton(
+        _ action: MetricAction,
+        metric: Metric,
+        role: ButtonRole? = nil,
+        tint: Color? = nil,
+        actionHandler: @escaping () -> Void
+    ) -> some View {
+        Button(role: role) {
+            actionHandler()
+        } label: {
+            Label(action.title, systemImage: action.icon)
+                .accessibilityHidden(true) // icon hidden from VoiceOver
+        }
+        .accessibilityLabel(NSLocalizedString(
+            "\(action.title) \(metric.name)",
+            comment: "Accessibility label for \(action.title.lowercased()) counter button"
+        ))
+        .accessibilityHint(NSLocalizedString(
+            action.hint,
+            comment: "Accessibility hint for \(action.title.lowercased()) counter button"
+        ))
+        .accessibilityAddTraits(.isButton)
+        .tint(tint)
     }
     
     private var addMetricsButton: some View {
@@ -240,7 +278,10 @@ struct MetricsListView: View {
             showAddMetricsSheet.toggle()
         } label: {
             Image(systemName: DMIcons.plus)
+                .accessibilityHidden(true)
         }
+        .accessibilityLabel("Add Counter")
+        .accessibilityHint("Creates a new counter")
     }
     
     private func deleteMetric(_ metric: Metric) {
@@ -260,7 +301,7 @@ struct MetricsListView: View {
     }
 }
 
-
+// MARK: - Swipe tip view.
 struct SwipeTipView: View {
     let onDismiss: () -> Void
     
@@ -296,6 +337,9 @@ struct SwipeTipView: View {
                     .padding(6)
                     .background(Circle().fill(Color(.systemFill)))
             }
+            .accessibilityLabel("Dismiss")
+            .accessibilityHint("Closes this view")
+            .accessibilityAddTraits(.isButton)
             .buttonStyle(.plain)
         }
         .padding(14)

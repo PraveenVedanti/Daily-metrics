@@ -30,7 +30,7 @@ struct DMStrings {
     static let editCounterSheetTitle = NSLocalizedString("Edit counter", comment: "Edit counter sheet title")
     
     // Metrics list view
-    static let swipeTipViewTitle = NSLocalizedString("Swipe counter card more options", comment: "Swipe tip view title")
+    static let swipeTipViewTitle = NSLocalizedString("Swipe  or Long press counter card more options", comment: "Swipe tip view title")
     static let swipeTipViewSubTitle = NSLocalizedString("Edit, reset or delete your counter", comment: "Swipe tip view sub title")
     static let countersNavigationTitle = NSLocalizedString("Counters", comment: "Counters navigation title")
     static let newCountersButtonTitle = NSLocalizedString("New Counter", comment: "New counter title")
@@ -72,6 +72,7 @@ struct DMStrings {
     static let rateTheAppText = NSLocalizedString("Rate the App", comment: "rate the app title")
     static let feedbacktext = NSLocalizedString("Contact / Feedback", comment: "contact title")
     static let versionText = NSLocalizedString("Version", comment: "version title")
+    static let clearButtonTitle = NSLocalizedString("Clear", comment: "clear button title")
     
     // History view
     static let emptyHistoryTitle = NSLocalizedString(
@@ -90,7 +91,7 @@ struct DMStrings {
 struct DMIcons {
     static let plus = "plus"
     static let minus = "minus"
-    static let handDraw = "hand.draw"
+    static let handDraw = "hand.tap"
     static let crossMark = "xmark"
     static let trash = "trash"
     static let reset = "arrow.counterclockwise"
