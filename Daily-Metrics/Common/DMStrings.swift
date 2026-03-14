@@ -30,7 +30,7 @@ struct DMStrings {
     static let editCounterSheetTitle = NSLocalizedString("Edit counter", comment: "Edit counter sheet title")
     
     // Metrics list view
-    static let swipeTipViewTitle = NSLocalizedString("Swipe  or Long press counter card more options", comment: "Swipe tip view title")
+    static let swipeTipViewTitle = NSLocalizedString("Swipe  or Long press counter card for more options", comment: "Swipe tip view title")
     static let swipeTipViewSubTitle = NSLocalizedString("Edit, reset or delete your counter", comment: "Swipe tip view sub title")
     static let countersNavigationTitle = NSLocalizedString("Counters", comment: "Counters navigation title")
     static let newCountersButtonTitle = NSLocalizedString("New Counter", comment: "New counter title")
