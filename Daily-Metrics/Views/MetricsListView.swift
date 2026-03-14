@@ -125,6 +125,28 @@ struct MetricsListView: View {
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
                         .listRowBackground(Color(uiColor: .systemGroupedBackground))
+                        .contextMenu {
+                            Button {
+                                metricToDelete = metric
+                                showDeleteAlert = true
+                            } label: {
+                                Label("Delete", systemImage: DMIcons.trashIcon)
+                                    .foregroundStyle(.red)
+                            }
+                            .tint(.red)
+                            
+                            Button {
+                                reset(in: modelContext, metric: metric)
+                            } label: {
+                                Label("Reset", systemImage: DMIcons.resetIcon)
+                            }
+                            
+                            Button {
+                                selectedMetric = metric
+                            } label: {
+                                Label("Edit", systemImage: DMIcons.editIcon)
+                            }
+                        }
                         .swipeActions {
                             Button {
                                 metricToDelete = metric

@@ -33,41 +33,41 @@ var body: some View {
         List {
             
             // MARK: Feedback
-            Section("Feedback") {
+            Section(DMStrings.feedbackSectionHeader) {
                 Toggle(isOn: $hapticsEnabled) {
-                    Label("Haptics", systemImage: "iphone.radiowaves.left.and.right")
+                    Label(DMStrings.hapticsText, systemImage: DMIcons.hapticsIcon)
                         .foregroundColor(.primary)
                 }
                 
                 Toggle(isOn: $soundEnabled) {
-                    Label("Sounds", systemImage: "speaker.wave.2")
+                    Label(DMStrings.soundsText, systemImage: DMIcons.soundsIcon)
                         .foregroundColor(.primary)
                 }
             }
             
             // MARK: Data
-            Section("Data") {
+            Section(DMStrings.dataSectionHeader) {
                 Button(role: .destructive) {
                     showClearHistoryAlert = true
                 } label: {
-                    Label("Clear All History", systemImage: DMIcons.trashIcon)
+                    Label(DMStrings.clearHistoryText, systemImage: DMIcons.trashIcon)
                         .foregroundColor(allHistory.isEmpty ? .secondary : .red)
                 }
             }
             
             // MARK: Support
-            Section("Support") {
+            Section(DMStrings.supportSectionHeader) {
                 Button {
                     requestReview()
                 } label: {
-                    Label("Rate the App", systemImage: "star")
+                    Label(DMStrings.rateTheAppText, systemImage: DMIcons.starIcon)
                         .foregroundColor(.primary)
                 }
                 
                 Button {
                     sendEmail()
                 } label: {
-                    Label("Contact / Feedback", systemImage: "envelope")
+                    Label(DMStrings.feedbacktext, systemImage: DMIcons.envelopeIcon)
                         .foregroundColor(.primary)
                 }
             }
@@ -75,7 +75,7 @@ var body: some View {
             // MARK: App Version
             Section {
                 HStack {
-                    Label("Version", systemImage: "info.circle")
+                    Label(DMStrings.versionText, systemImage: DMIcons.infoIcon)
                         .foregroundColor(.primary)
                     Spacer()
                     Text(appVersion)
@@ -84,15 +84,15 @@ var body: some View {
             }
             
         }
-        .navigationTitle("Settings")
+        .navigationTitle(DMStrings.settingsNavigationTitle)
         .navigationBarTitleDisplayMode(.large)
-        .alert("Clear All History", isPresented: $showClearHistoryAlert) {
+        .alert(DMStrings.clearHistoryAlertTitle, isPresented: $showClearHistoryAlert) {
             Button("Clear", role: .destructive) {
                 clearAllHistory()
             }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("This will permanently delete the counter and all its history.")
+            Text(DMStrings.clearHistoryAlertMessage)
         }
     }
 }

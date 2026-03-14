@@ -24,7 +24,8 @@ public struct MetricCard: View {
     @Environment(\.colorScheme) var colorScheme
     
     private let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
-    @Environment(\.editMode) private var editMode  // ← Add here
+    
+    @Environment(\.editMode) private var editMode
         
     private var isEditing: Bool {
         editMode?.wrappedValue.isEditing ?? false
@@ -117,7 +118,7 @@ public struct MetricCard: View {
             
             let soundEnabled = UserDefaults.standard.bool(forKey: "soundEnabled")
             if soundEnabled {
-                AudioServicesPlaySystemSound(1104)
+                AudioServicesPlaySystemSound(1123)
             }
             
             metric.increment(in: modelContext)
@@ -143,7 +144,7 @@ public struct MetricCard: View {
             
             let soundEnabled = UserDefaults.standard.bool(forKey: "soundEnabled")
             if soundEnabled {
-                AudioServicesPlaySystemSound(1104)
+                AudioServicesPlaySystemSound(1123)
             }
            
             metric.decrement(in: modelContext)

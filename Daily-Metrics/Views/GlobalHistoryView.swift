@@ -133,8 +133,8 @@ struct GlobalHistoryView: View {
                         HStack(spacing: 12) {
                             
                             RoundedRectangle(cornerRadius: 4, style: .continuous)
-                                .fill(ColorToken.stringToColor(entry.metric?.color ?? "counterBlue"))
-                                .frame(width: 6)
+                                .fill(ColorToken.stringToColor(entry.metric?.color ?? "counterBlue").opacity(0.6))
+                                .frame(width: 4)
                             
                             // Counter name and date.
                             VStack(alignment: .leading, spacing: 6) {
@@ -189,7 +189,7 @@ struct GlobalHistoryView: View {
     private var filteringPills: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                FilterPill(title: "All", isSelected: selectedCounter == nil) {
+                FilterPill(title: "     All     ", isSelected: selectedCounter == nil) {
                     selectedCounter = nil
                 }
                 ForEach(metrics) { metric in
@@ -228,7 +228,7 @@ struct FilterPill: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            HStack(spacing: 12) {
                 
                 if let color {
                     Circle()
@@ -248,7 +248,7 @@ struct FilterPill: View {
         }
         .background {
             RoundedRectangle(cornerRadius: 20)
-                .fill(isSelected ? Color.secondary.opacity(colorScheme == .dark ? 0.4 : 0.1) : Color.clear)
+                .fill(isSelected ? Color.secondary.opacity(colorScheme == .dark ? 0.4 : 0.2) : Color.clear)
                 .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
         }
         .buttonStyle(.plain)

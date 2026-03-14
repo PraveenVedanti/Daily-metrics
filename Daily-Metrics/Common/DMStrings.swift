@@ -32,6 +32,21 @@ struct DMStrings {
     static let swipeTipViewSubTitle = NSLocalizedString("Edit, reset or delete your counter", comment: "Swipe tip view sub title")
     static let countersNavigationTitle = NSLocalizedString("Counters", comment: "Counters navigation title")
     static let newCountersButtonTitle = NSLocalizedString("New Counter", comment: "New counter title")
+    
+    // Settings view
+    static let settingsNavigationTitle = NSLocalizedString("Settings", comment: "New counter title")
+    static let clearHistoryAlertTitle = NSLocalizedString("Clear All History", comment: "Clear history title")
+    static let feedbackSectionHeader = NSLocalizedString("Feedback", comment: "Feedback header title")
+    static let dataSectionHeader = NSLocalizedString("Data", comment: "Data header title")
+    static let supportSectionHeader = NSLocalizedString("Support", comment: "Support header title")
+    static let clearHistoryAlertMessage = NSLocalizedString("This will permanently delete the counter and all its history.", comment: "Clear history alert title")
+    static let hapticsText = NSLocalizedString("Haptics", comment: "Haptics title")
+    static let soundsText = NSLocalizedString("Sounds", comment: "Sounds title")
+    static let clearHistoryText = NSLocalizedString("Clear All History", comment: "clear history title")
+    static let rateTheAppText = NSLocalizedString("Rate the App", comment: "rate the app title")
+    static let feedbacktext = NSLocalizedString("Contact / Feedback", comment: "contact title")
+    static let versionText = NSLocalizedString("Version", comment: "version title")
+    
 }
 
 struct DMIcons {
@@ -43,4 +58,8 @@ struct DMIcons {
     static let resetIcon = "arrow.counterclockwise"
     static let editIcon = "pencil"
     static let infoIcon = "info.circle"
+    static let hapticsIcon = "iphone.radiowaves.left.and.right"
+    static let soundsIcon = "speaker.wave.2"
+    static let starIcon = "star"
+    static let envelopeIcon = "envelope"
 }
