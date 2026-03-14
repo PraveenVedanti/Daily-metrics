@@ -35,12 +35,12 @@ var body: some View {
             // MARK: Feedback
             Section(DMStrings.feedbackSectionHeader) {
                 Toggle(isOn: $hapticsEnabled) {
-                    Label(DMStrings.hapticsText, systemImage: DMIcons.hapticsIcon)
+                    Label(DMStrings.hapticsText, systemImage: DMIcons.haptics)
                         .foregroundColor(.primary)
                 }
                 
                 Toggle(isOn: $soundEnabled) {
-                    Label(DMStrings.soundsText, systemImage: DMIcons.soundsIcon)
+                    Label(DMStrings.soundsText, systemImage: DMIcons.sounds)
                         .foregroundColor(.primary)
                 }
             }
@@ -50,7 +50,7 @@ var body: some View {
                 Button(role: .destructive) {
                     showClearHistoryAlert = true
                 } label: {
-                    Label(DMStrings.clearHistoryText, systemImage: DMIcons.trashIcon)
+                    Label(DMStrings.clearHistoryText, systemImage: DMIcons.trash)
                         .foregroundColor(allHistory.isEmpty ? .secondary : .red)
                 }
             }
@@ -60,14 +60,14 @@ var body: some View {
                 Button {
                     requestReview()
                 } label: {
-                    Label(DMStrings.rateTheAppText, systemImage: DMIcons.starIcon)
+                    Label(DMStrings.rateTheAppText, systemImage: DMIcons.star)
                         .foregroundColor(.primary)
                 }
                 
                 Button {
                     sendEmail()
                 } label: {
-                    Label(DMStrings.feedbacktext, systemImage: DMIcons.envelopeIcon)
+                    Label(DMStrings.feedbacktext, systemImage: DMIcons.envelope)
                         .foregroundColor(.primary)
                 }
             }
@@ -75,7 +75,7 @@ var body: some View {
             // MARK: App Version
             Section {
                 HStack {
-                    Label(DMStrings.versionText, systemImage: DMIcons.infoIcon)
+                    Label(DMStrings.versionText, systemImage: DMIcons.info)
                         .foregroundColor(.primary)
                     Spacer()
                     Text(appVersion)

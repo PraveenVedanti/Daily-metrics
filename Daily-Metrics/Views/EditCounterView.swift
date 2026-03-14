@@ -41,7 +41,7 @@ struct EditCounterView: View {
     
     var body: some View {
         NavigationStack {
-            List {
+            Form {
                 
                 // Counter name section
                 Section {
@@ -70,14 +70,7 @@ struct EditCounterView: View {
                     Text(DMStrings.colorSectionFooter)
                 }
             }
-            .onAppear {
-                Task {
-                    try? await Task.sleep(nanoseconds: 500_000_000)
-                    await MainActor.run {
-                        isTextFieldFocused = true
-                    }
-                }
-            }
+            .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -88,7 +81,7 @@ struct EditCounterView: View {
                     .buttonStyle(.plain)
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button {
                         updateMetric(self.metric)
                     } label: {
@@ -99,6 +92,13 @@ struct EditCounterView: View {
             }
             .navigationTitle(DMStrings.editCounterSheetTitle)
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .onTapGesture {
+            isTextFieldFocused = false
+        }
+        .task {
+            try? await Task.sleep(nanoseconds: 150_000_000)
+            isTextFieldFocused = true
         }
     }
     

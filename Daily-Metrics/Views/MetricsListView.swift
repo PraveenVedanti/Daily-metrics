@@ -31,6 +31,12 @@ struct MetricsListView: View {
     // Metric to be deleted state variable
     @State private var metricToDelete: Metric? = nil
     
+    // Alert shown before metric reset.
+    @State private var showResetAlert = false
+    
+    // Metric to be reset state variable
+    @State private var metricToReset: Metric? = nil
+    
     // Model context for local data.
     @Environment(\.modelContext) private var modelContext
     
@@ -77,12 +83,12 @@ struct MetricsListView: View {
         VStack(spacing: 16) {
             
             // Title
-            Text("No Counters Yet")
+            Text(DMStrings.emptyStateTitle)
                 .font(.system(size: 22, weight: .bold, design: .default))
                 .foregroundStyle(.primary)
             
             // Subtitle
-            Text("Create your first counter to start.")
+            Text(DMStrings.emptyStateMessage)
                 .font(.system(size: 15))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -93,7 +99,7 @@ struct MetricsListView: View {
                 showAddMetricsSheet.toggle()
             }, label: {
                 HStack(spacing: 8) {
-                    Image(systemName: DMIcons.plusIcon)
+                    Image(systemName: DMIcons.plus)
                         .font(.system(size: 16, weight: .medium))
                     Text(DMStrings.newCountersButtonTitle)
                         .font(.system(size: 16, weight: .semibold))
@@ -107,9 +113,9 @@ struct MetricsListView: View {
             .shadow(color: .black.opacity(0.18), radius: 10, x: 0, y: 4)
             
             HStack(spacing: 5) {
-                Image(systemName: DMIcons.infoIcon)
+                Image(systemName: DMIcons.info)
                     .font(.system(size: 13))
-                Text("You can also tap + in the top right")
+                Text(DMStrings.emptyStateHint)
                     .font(.system(size: 13))
             }
             .foregroundStyle(Color(.systemGray3))
@@ -126,47 +132,55 @@ struct MetricsListView: View {
                         .listRowInsets(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
                         .listRowBackground(Color(uiColor: .systemGroupedBackground))
                         .contextMenu {
-                            Button {
-                                metricToDelete = metric
-                                showDeleteAlert = true
-                            } label: {
-                                Label("Delete", systemImage: DMIcons.trashIcon)
-                                    .foregroundStyle(.red)
-                            }
-                            .tint(.red)
                             
-                            Button {
-                                reset(in: modelContext, metric: metric)
-                            } label: {
-                                Label("Reset", systemImage: DMIcons.resetIcon)
-                            }
-                            
+                            // Edit button
                             Button {
                                 selectedMetric = metric
                             } label: {
-                                Label("Edit", systemImage: DMIcons.editIcon)
+                                Label(DMStrings.editButtonTitle, systemImage: DMIcons.edit)
+                            }
+                            
+                            // Reset button
+                            Button {
+                                metricToReset = metric
+                                showResetAlert = true
+                            } label: {
+                                Label(DMStrings.resetButtonTitle, systemImage: DMIcons.reset)
+                            }
+                            
+                            // Delete button
+                            Button(role: .destructive) {
+                                metricToDelete = metric
+                                showDeleteAlert = true
+                            } label: {
+                                Label(DMStrings.deleteButtonTitle, systemImage: DMIcons.trash)
                             }
                         }
                         .swipeActions {
+                            
+                            // Delete button
                             Button {
                                 metricToDelete = metric
                                 showDeleteAlert = true
                             } label: {
-                                Label("Delete", systemImage: DMIcons.trashIcon)
+                                Label(DMStrings.deleteButtonTitle, systemImage: DMIcons.trash)
                             }
                             .tint(.red)
                             
+                            // Reset button
                             Button {
-                                reset(in: modelContext, metric: metric)
+                                metricToReset = metric
+                                showResetAlert = true
                             } label: {
-                                Label("Reset", systemImage: DMIcons.resetIcon)
+                                Label(DMStrings.resetButtonTitle, systemImage: DMIcons.reset)
                             }
                             .tint(.orange.opacity(0.6))
                             
+                            // Edit button
                             Button {
                                 selectedMetric = metric
                             } label: {
-                                Label("Edit", systemImage: DMIcons.editIcon)
+                                Label(DMStrings.editButtonTitle, systemImage: DMIcons.edit)
                             }
                             .tint(Color.secondary)
                         }
@@ -187,16 +201,27 @@ struct MetricsListView: View {
             .listRowSeparator(.hidden)
             .background(Color(uiColor: .systemGroupedBackground))
             .alert("Delete \(metricToDelete?.name ?? "Counter") ?", isPresented: $showDeleteAlert) {
-                Button("Delete", role: .destructive) {
+                Button(DMStrings.deleteButtonTitle
+                       , role: .destructive) {
                     if let metric = metricToDelete {
                         deleteMetric(metric)
                     }
                 }
-                Button("Cancel", role: .cancel) { }
+                Button(DMStrings.cancelButtonTitle, role: .cancel) { }
             } message: {
-                Text("This will permanently delete the counter and all its history.")
+                Text(DMStrings.deleteCounterAlertMessage)
             }
-            
+            .alert("Reset \(metricToReset?.name ?? "Counter") ?", isPresented: $showResetAlert) {
+                Button(DMStrings.resetButtonTitle, role: .destructive) {
+                    if let metric = metricToReset {
+                        reset(in: modelContext, metric: metric)
+                    }
+                }
+                Button(DMStrings.cancelButtonTitle, role: .cancel) { }
+            } message: {
+                Text(DMStrings.resetCounterAlertMessage)
+            }
+
             // Swipe Tip
             if metrics.count == 1 && !hasSeenSwipeTip {
                 SwipeTipView {
@@ -214,7 +239,7 @@ struct MetricsListView: View {
         Button {
             showAddMetricsSheet.toggle()
         } label: {
-            Image(systemName: DMIcons.plusIcon)
+            Image(systemName: DMIcons.plus)
         }
     }
     
@@ -245,7 +270,7 @@ struct SwipeTipView: View {
     var body: some View {
         HStack(spacing: 12) {
             // Animated swipe icon
-            Image(systemName: DMIcons.handDrawIcon)
+            Image(systemName: DMIcons.handDraw)
                 .font(.title2)
                 .foregroundStyle(.blue)
             
@@ -264,7 +289,7 @@ struct SwipeTipView: View {
             Button {
                 onDismiss()
             } label: {
-                Image(systemName: DMIcons.crossMarkIcon)
+                Image(systemName: DMIcons.crossMark)
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(.secondary)

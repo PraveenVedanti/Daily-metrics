@@ -7,6 +7,8 @@
 
 import Foundation
 
+// MARK: - Localized strings.
+
 struct DMStrings {
     
     // Add counter view
@@ -32,6 +34,30 @@ struct DMStrings {
     static let swipeTipViewSubTitle = NSLocalizedString("Edit, reset or delete your counter", comment: "Swipe tip view sub title")
     static let countersNavigationTitle = NSLocalizedString("Counters", comment: "Counters navigation title")
     static let newCountersButtonTitle = NSLocalizedString("New Counter", comment: "New counter title")
+    static let resetCounterAlertMessage = NSLocalizedString("This will reset the counter back to 0", comment: "Alert message explaining that the counter will be reset to zero")
+    static let deleteCounterAlertMessage = NSLocalizedString(
+        "This will permanently delete the counter and all its history.",
+        comment: "Warning message shown before deleting a counter"
+    )
+    static let cancelButtonTitle = NSLocalizedString("Cancel", comment: "Button title to cancel an action")
+    static let resetButtonTitle = NSLocalizedString("Reset", comment: "Button title to reset the counter value")
+    static let deleteButtonTitle = NSLocalizedString("Delete", comment: "Button title to delete a counter")
+    static let editButtonTitle = NSLocalizedString("Edit", comment: "Button title to edit a counter")
+    
+    static let emptyStateTitle = NSLocalizedString(
+        "No Counters Yet",
+        comment: "Title shown when user has not created any counters"
+    )
+
+    static let emptyStateMessage = NSLocalizedString(
+        "Create your first counter to start.",
+        comment: "Message encouraging the user to create their first counter"
+    )
+
+    static let emptyStateHint = NSLocalizedString(
+        "You can also tap + in the top right",
+        comment: "Hint explaining how to add a new counter"
+    )
     
     // Settings view
     static let settingsNavigationTitle = NSLocalizedString("Settings", comment: "New counter title")
@@ -47,19 +73,34 @@ struct DMStrings {
     static let feedbacktext = NSLocalizedString("Contact / Feedback", comment: "contact title")
     static let versionText = NSLocalizedString("Version", comment: "version title")
     
+    // History view
+    static let emptyHistoryTitle = NSLocalizedString(
+        "No history yet",
+        comment: "Title shown when there is no counter history"
+    )
+
+    static let emptyHistoryMessage = NSLocalizedString(
+        "Start using a counter and your activity will appear here.",
+        comment: "Message explaining that history will show when user interacts with counters"
+    )
+    static let historyNavigationTitle = NSLocalizedString("History", comment: "History navigation title")
+    
 }
 
 struct DMIcons {
-    static let plusIcon = "plus"
-    static let minusIcon = "minus"
-    static let handDrawIcon = "hand.draw"
-    static let crossMarkIcon = "xmark"
-    static let trashIcon = "trash"
-    static let resetIcon = "arrow.counterclockwise"
-    static let editIcon = "pencil"
-    static let infoIcon = "info.circle"
-    static let hapticsIcon = "iphone.radiowaves.left.and.right"
-    static let soundsIcon = "speaker.wave.2"
-    static let starIcon = "star"
-    static let envelopeIcon = "envelope"
+    static let plus = "plus"
+    static let minus = "minus"
+    static let handDraw = "hand.draw"
+    static let crossMark = "xmark"
+    static let trash = "trash"
+    static let reset = "arrow.counterclockwise"
+    static let edit = "pencil"
+    static let info = "info.circle"
+    static let haptics = "iphone.radiowaves.left.and.right"
+    static let sounds = "speaker.wave.2"
+    static let star = "star"
+    static let envelope = "envelope"
+    static let checkMark = "checkmark"
+    static let clock = "clock"
+    static let rightArrow = "arrow.right"
 }

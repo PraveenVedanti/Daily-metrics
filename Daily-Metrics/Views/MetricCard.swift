@@ -123,7 +123,7 @@ public struct MetricCard: View {
             
             metric.increment(in: modelContext)
         } label: {
-            Image(systemName: DMIcons.plusIcon)
+            Image(systemName: DMIcons.plus)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
                 .frame(width: 48, height: 48)
@@ -149,7 +149,7 @@ public struct MetricCard: View {
            
             metric.decrement(in: modelContext)
         } label: {
-            Image(systemName: DMIcons.minusIcon)
+            Image(systemName: DMIcons.minus)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(metricColor.opacity(0.8))
                 .frame(width: 48, height: 48)

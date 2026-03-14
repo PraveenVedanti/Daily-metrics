@@ -96,19 +96,19 @@ struct GlobalHistoryView: View {
                 
                 
                 // Clock icon
-                Image(systemName: "clock")
+                Image(systemName: DMIcons.clock)
                     .font(.system(size: 26, weight: .light))
                     .foregroundColor(Color.accentColor)
             }
             .padding(.bottom, 4)
             
             // Title
-            Text("No history yet")
+            Text(DMStrings.emptyHistoryTitle)
                 .font(.system(size: 22, weight: .bold, design: .default))
                 .foregroundStyle(.primary)
             
             // Subtitle
-            Text("Start using a counter and your activity will appear here.")
+            Text(DMStrings.emptyHistoryMessage)
                 .font(.system(size: 15))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -162,7 +162,7 @@ struct GlobalHistoryView: View {
                                 HStack(spacing: 4) {
                                     Text("\(entry.valueBefore)")
                                         .foregroundStyle(.secondary)
-                                    Image(systemName: "arrow.right")
+                                    Image(systemName: DMIcons.rightArrow)
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     Text("\(entry.valueAfter)")
@@ -177,7 +177,7 @@ struct GlobalHistoryView: View {
             }
         }
         .listStyle(.insetGrouped)
-        .navigationTitle("History")
+        .navigationTitle(DMStrings.historyNavigationTitle)
         .navigationBarTitleDisplayMode(.large)
     }
     
