@@ -9,10 +9,6 @@ import Foundation
 import SwiftUI
 import SwiftData
 
-extension Color {
-    
-}
-
 // MARK: - Add metrics view.
 
 struct AddMetricsView: View {
@@ -37,7 +33,7 @@ struct AddMetricsView: View {
     
     var body: some View {
         NavigationStack {
-            List {
+            Form {
                 
                 // Counter name section
                 Section {
@@ -48,18 +44,18 @@ struct AddMetricsView: View {
                 Section {
                     initialValueTextField
                 } header: {
-                    Text(LocalizedStrings.initialValueTextFiledHeader)
+                    Text(DMStrings.initialValueTextFiledHeader)
                 } footer: {
-                    Text(LocalizedStrings.initialValueTextFieldFooter)
+                    Text(DMStrings.initialValueTextFieldFooter)
                 }
                 
                 // Increment by section
                 Section {
                     incrementByTextField
                 } header: {
-                    Text(LocalizedStrings.incrementByTextFieldHeader)
+                    Text(DMStrings.incrementByTextFieldHeader)
                 } footer: {
-                    Text(LocalizedStrings.incrementByTextFieldFooter)
+                    Text(DMStrings.incrementByTextFieldFooter)
                 }
                 
                 
@@ -70,50 +66,54 @@ struct AddMetricsView: View {
                         ColorPickerView(colors: ColorToken.secondSetCounterColors, selectedColor: $metricColor)
                     }
                 } header: {
-                    Text(LocalizedStrings.colorSectionHeader)
+                    Text(DMStrings.colorSectionHeader)
                 } footer: {
-                    Text(LocalizedStrings.colorSectionFooter)
+                    Text(DMStrings.colorSectionFooter)
                 }
                 
-            }.onTapGesture {
-                isTextFieldFocused = false
             }
-            .onAppear {
-                Task {
-                    try? await Task.sleep(nanoseconds: 100_000_000)
-                    await MainActor.run {
-                        isTextFieldFocused = true
-                    }
-                }
-            }
-            .navigationTitle(LocalizedStrings.newCounterTitle)
+            .scrollDismissesKeyboard(.interactively)
+            .navigationTitle(DMStrings.newCounterTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         dismiss()
                     } label: {
-                        Image(systemName: "xmark")
+                        Image(systemName: DMIcons.crossMark)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Dismiss")
+                        .accessibilityHint("Closes this sheet")
+                        .accessibilityAddTraits(.isButton)
                 }
                
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button {
                         addNewMetrixToContext()
                     } label: {
-                        Image(systemName: "checkmark")
+                        Image(systemName: DMIcons.checkMark)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(metricName.isEmpty ? .gray.opacity(0.8) : .blue)
                     .disabled(metricName.isEmpty)
+                    .accessibilityLabel("Create counter")
+                    .accessibilityHint("create new counter and dismiss sheet")
+                    .accessibilityAddTraits(.isButton)
                 }
             }
+        }
+        .onTapGesture {
+            isTextFieldFocused = false
+        }
+        .task {
+            try? await Task.sleep(nanoseconds: 150_000_000)
+            isTextFieldFocused = true
         }
     }
     
     private var metricNameTextField: some View {
-        TextField(LocalizedStrings.metricNameTextFieldPlaceholder, text: $metricName)
+        TextField(DMStrings.metricNameTextFieldPlaceholder, text: $metricName)
             .focused($isTextFieldFocused)
     }
     
@@ -188,23 +188,4 @@ struct ColorPickerView: View {
         }
         .padding(.horizontal)
     }
-}
-
-// MARK: - Localized strings.
-
-struct LocalizedStrings {
-    static let initialValueTextFiledHeader = NSLocalizedString("Initial value", comment: "Initial value text field header")
-    static let initialValueTextFieldFooter = NSLocalizedString("Enter initial value (default is 0)", comment: "Initial value text field footer")
-    
-    static let incrementByTextFieldHeader = NSLocalizedString("Increment by", comment: "Increment by text field header")
-    static let incrementByTextFieldFooter = NSLocalizedString("Enter the amount the counter should increase per tap (default is 1)", comment: "Increment by text field footer")
-    
-    static let colorSectionHeader = NSLocalizedString("Color", comment: "Color section header")
-    static let colorSectionFooter = NSLocalizedString("Choose a color for your counter", comment: "Color section footer")
-    
-    static let metricNameTextFieldPlaceholder = NSLocalizedString("Counter name (Required)", comment: "Counter name text field placeholder")
-    
-    static let newCounterTitle = NSLocalizedString("New Counter", comment: "New counter navigation title")
-    
-    static let counterValueTextFiledHeader = NSLocalizedString("Counter value", comment: "Counter value text field header")
 }

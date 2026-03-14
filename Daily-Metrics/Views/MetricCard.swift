@@ -5,6 +5,7 @@
 //  Created by Praveen Kumar Vedanti on 3/2/26.
 //
 
+import AVFoundation
 import Foundation
 import SwiftUI
 import SwiftData
@@ -19,9 +20,16 @@ public struct MetricCard: View {
     // Model context to fetch data.
     @Environment(\.modelContext) private var modelContext
     
-    @State private var showEditMetricsSheet = false
-    
+    // Color scheme environment variable.
     @Environment(\.colorScheme) var colorScheme
+    
+    private let impactGenerator = UIImpactFeedbackGenerator(style: .medium)
+    
+    @Environment(\.editMode) private var editMode
+        
+    private var isEditing: Bool {
+        editMode?.wrappedValue.isEditing ?? false
+    }
     
     init(
         metric: Metric,
@@ -31,23 +39,27 @@ public struct MetricCard: View {
     
     public var body: some View {
         
-        HStack {
-            decrementButton
-                .frame(maxWidth: .infinity, alignment: .leading)
-
+        VStack(spacing: 8) {
             
-            VStack(spacing: 8) {
-                metricTitleView
+            metricTitleView
+            
+            HStack {
+                decrementButton
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
                 metricValueView
+                    .frame(maxWidth: .infinity)
+                    .multilineTextAlignment(.center)
+                
+                incrementButton
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            .frame(maxWidth: .infinity)
-            .multilineTextAlignment(.center)
-            
-            incrementButton
-                .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .padding(.vertical, 16)
-        .padding(.horizontal, 16)
+        .onAppear {
+            impactGenerator.prepare()
+        }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 12)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(
@@ -79,11 +91,13 @@ public struct MetricCard: View {
         }
     }
     
-    
     private var metricTitleView: some View {
-        Text(metric.name.uppercased())
-            .font(.caption2.bold())
+        Text(metric.name)
+            .font(.caption.bold())
+            .kerning(1.5)
             .foregroundStyle(metricColor)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .lineLimit(1)
     }
     
     private var metricValueView: some View {
@@ -95,31 +109,47 @@ public struct MetricCard: View {
     
     private var incrementButton: some View {
         Button {
-            let generator = UIImpactFeedbackGenerator(style: .medium)
-            generator.impactOccurred()
+           
+            // If haptics is enabled, apply it to button tap.
+            let enabled = UserDefaults.standard.bool(forKey: "hapticsEnabled")
+            if enabled {
+                impactGenerator.impactOccurred()
+            }
+            
+            let soundEnabled = UserDefaults.standard.bool(forKey: "soundEnabled")
+            if soundEnabled {
+                AudioServicesPlaySystemSound(1123)
+            }
             
             metric.increment(in: modelContext)
-            updateMetric()
         } label: {
-            Image(systemName: "plus")
+            Image(systemName: DMIcons.plus)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
                 .frame(width: 48, height: 48)
                 .background(metricColor.opacity(colorScheme == .dark ?  0.6 : 0.8))
                 .clipShape(Circle())
         }
+        .disabled(isEditing)
         .buttonStyle(.borderless)
     }
     
     private var decrementButton: some View {
         Button {
-            let generator = UIImpactFeedbackGenerator(style: .medium)
-            generator.impactOccurred()
+            // If haptics is enabled, apply it to button tap.
+            let enabled = UserDefaults.standard.bool(forKey: "hapticsEnabled")
+            if enabled {
+                impactGenerator.impactOccurred()
+            }
             
+            let soundEnabled = UserDefaults.standard.bool(forKey: "soundEnabled")
+            if soundEnabled {
+                AudioServicesPlaySystemSound(1123)
+            }
+           
             metric.decrement(in: modelContext)
-            updateMetric()
         } label: {
-            Image(systemName: "minus")
+            Image(systemName: DMIcons.minus)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(metricColor.opacity(0.8))
                 .frame(width: 48, height: 48)
@@ -130,6 +160,7 @@ public struct MetricCard: View {
                         .stroke(metricColor.opacity(0.6), lineWidth: 0.4)
                 )
         }
+        .disabled(isEditing)
         .buttonStyle(.borderless)
     }
 }

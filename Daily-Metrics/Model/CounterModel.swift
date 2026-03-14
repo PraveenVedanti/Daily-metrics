@@ -18,6 +18,8 @@ final class Metric {
     var color: String?
     var createdAt: Date
     
+    var sortOrder: Int = 0
+    
     @Relationship(deleteRule: .cascade, inverse: \HistoryEntry.metric)
     var history: [HistoryEntry] = []
 
@@ -42,11 +44,13 @@ final class HistoryEntry {
     var id: UUID
     var timestamp: Date
     var change: Int
+    var valueBefore: Int
     var valueAfter: Int
     var metric: Metric?
     
     init(
         change: Int,
+        valueBefore: Int,
         valueAfter: Int,
         metric: Metric? = nil
     ) {
@@ -54,6 +58,7 @@ final class HistoryEntry {
         self.timestamp = Date()
         self.change = change
         self.valueAfter = valueAfter
+        self.valueBefore = valueBefore
         self.metric = metric
     }
 }
@@ -81,15 +86,17 @@ extension Metric {
     
     /// Increment and record history
     func increment(by delta: Int = 1, in context: ModelContext) {
+        let before = value
         value += (delta * increment)
-        let entry = HistoryEntry(change: delta, valueAfter: value, metric: self)
+        let entry = HistoryEntry(change: delta, valueBefore: before, valueAfter: value, metric: self)
         context.insert(entry)
     }
     
     /// Decrement and record history
     func decrement(by delta: Int = 1, in context: ModelContext) {
+        let before = value
         value -= (delta * increment)
-        let entry = HistoryEntry(change: -delta, valueAfter: value, metric: self)
+        let entry = HistoryEntry(change: -delta, valueBefore: before, valueAfter: value, metric: self)
         context.insert(entry)
     }
     
@@ -110,31 +117,15 @@ extension Metric {
     }
 }
 
-
-enum CounterMigrationPlan: SchemaMigrationPlan {
-    static var schemas: [any VersionedSchema.Type] {
-        [CounterSchemaV1.self, CounterSchemaV2.self]
+extension HistoryEntry {
+    var actualChange: Int {
+        valueAfter - valueBefore
     }
-
-    static var stages: [MigrationStage] {
-        [migrateV1toV2]
-    }
-
-    // Lightweight = no data transformation needed, just new model added
-    static let migrateV1toV2 = MigrationStage.lightweight(
-        fromVersion: CounterSchemaV1.self,
-        toVersion: CounterSchemaV2.self
-    )
 }
+
 
 // Your original schema (Counter only)
 enum CounterSchemaV1: VersionedSchema {
     static var versionIdentifier = Schema.Version(1, 0, 0)
-    static var models: [any PersistentModel.Type] { [Metric.self] }
-}
-
-// New schema (Counter + HistoryEntry)
-enum CounterSchemaV2: VersionedSchema {
-    static var versionIdentifier = Schema.Version(2, 0, 0)
     static var models: [any PersistentModel.Type] { [Metric.self, HistoryEntry.self] }
 }

@@ -20,6 +20,7 @@ struct EditCounterView: View {
     // Metric name and descriptions.
     @State private var metricName: String = ""
     
+    // Metric values
     @State private var initialValue: String = ""
     @State private var incrementBy: String = ""
     
@@ -41,7 +42,7 @@ struct EditCounterView: View {
     
     var body: some View {
         NavigationStack {
-            List {
+            Form {
                 
                 // Counter name section
                 Section {
@@ -49,12 +50,12 @@ struct EditCounterView: View {
                 }
                 
                 // Counter value section
-                Section("Counter value") {
+                Section(DMStrings.counterCurrentValueHeader) {
                     initialValueTextField
                 }
 
                 // Increment by section
-                Section(LocalizedStrings.incrementByTextFieldHeader) {
+                Section(DMStrings.incrementByTextFieldHeader) {
                     incrementByTextField
                 }
                 
@@ -65,40 +66,46 @@ struct EditCounterView: View {
                         ColorPickerView(colors: ColorToken.secondSetCounterColors, selectedColor: $metricColor)
                     }
                 } header: {
-                    Text(LocalizedStrings.colorSectionHeader)
+                    Text(DMStrings.colorSectionHeader)
                 } footer: {
-                    Text(LocalizedStrings.colorSectionFooter)
+                    Text(DMStrings.colorSectionFooter)
                 }
             }
-            .onAppear {
-                Task {
-                    try? await Task.sleep(nanoseconds: 500_000_000)
-                    await MainActor.run {
-                        isTextFieldFocused = true
-                    }
-                }
-            }
+            .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         dismiss()
                     } label: {
-                        Image(systemName: "xmark")
+                        Image(systemName: DMIcons.crossMark)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Dismiss")
+                    .accessibilityHint("Discards changes and closes the sheet")
+                    .accessibilityAddTraits(.isButton)
                 }
                 
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button {
                         updateMetric(self.metric)
                     } label: {
-                        Image(systemName: "checkmark")
+                        Image(systemName: DMIcons.checkMark)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Save")
+                    .accessibilityHint("Saves changes to \(metric.name)")
+                    .accessibilityAddTraits(.isButton)
                 }
             }
-            .navigationTitle("Edit counter")
+            .navigationTitle(DMStrings.editCounterSheetTitle)
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .onTapGesture {
+            isTextFieldFocused = false
+        }
+        .task {
+            try? await Task.sleep(nanoseconds: 150_000_000)
+            isTextFieldFocused = true
         }
     }
     
