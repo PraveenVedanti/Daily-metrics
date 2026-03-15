@@ -12,7 +12,7 @@ import StoreKit
 struct SettingsView: View {
 
 // MARK: - App Storage
-@AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = true
+@AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = false
 @AppStorage("soundEnabled") private var soundEnabled: Bool = false
 
 // Model context.
@@ -110,7 +110,7 @@ var body: some View {
     }
     
     private func sendEmail() {
-        let urlString = "mailto:\(contactEmail)?subject=CountUp%20Feedback"
+        let urlString = "mailto:\(contactEmail)?subject=Counters%20Feedback"
         guard let url = URL(string: urlString) else { return }
         UIApplication.shared.open(url)
     }
