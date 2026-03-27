@@ -65,7 +65,7 @@ struct DMStrings {
     static let feedbackSectionHeader = NSLocalizedString("Feedback", comment: "Feedback header title")
     static let dataSectionHeader = NSLocalizedString("Data", comment: "Data header title")
     static let supportSectionHeader = NSLocalizedString("Support", comment: "Support header title")
-    static let clearHistoryAlertMessage = NSLocalizedString("This will permanently delete all counter's history.", comment: "Clear history alert title")
+    static let clearHistoryAlertMessage = NSLocalizedString("This will permanently delete all history data", comment: "Clear history alert title")
     static let hapticsText = NSLocalizedString("Haptics", comment: "Haptics title")
     static let soundsText = NSLocalizedString("Sounds", comment: "Sounds title")
     static let clearHistoryText = NSLocalizedString("Clear All History", comment: "clear history title")
