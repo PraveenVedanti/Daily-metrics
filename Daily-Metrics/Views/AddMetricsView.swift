@@ -19,6 +19,7 @@ struct AddMetricsView: View {
     // Metric values.
     @State private var initialValue: String = "0"
     @State private var incrementBy: String = "1"
+    @State private var metricGoal: String = ""
     
     // Metric color
     @State private var metricColor: Color = .counterBlue
@@ -30,6 +31,8 @@ struct AddMetricsView: View {
     
     // Environment variable to dismiss sheet.
     @Environment(\.dismiss) var dismiss
+    
+    @State private var isGoalTurnedOn: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -71,6 +74,18 @@ struct AddMetricsView: View {
                     Text(DMStrings.colorSectionFooter)
                 }
                 
+                Section {
+                    VStack(spacing: 16) {
+                        Toggle(isOn: $isGoalTurnedOn) {
+                            Text("Goal")
+                        }
+                        
+                        if isGoalTurnedOn {
+                            Divider()
+                            goalsTextField
+                        }
+                    }
+                }
             }
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle(DMStrings.newCounterTitle)
@@ -127,6 +142,11 @@ struct AddMetricsView: View {
             .keyboardType(.numberPad)
     }
     
+    private var goalsTextField: some View {
+        TextField("Set goal for counter", text: $metricGoal)
+            .keyboardType(.numberPad)
+    }
+    
     private func addNewMetrixToContext() {
         guard let initialValueInt = Int(initialValue) else {
             dismiss()
@@ -142,7 +162,9 @@ struct AddMetricsView: View {
             name: metricName,
             value: initialValueInt,
             increment: incrementByInt,
-            color: ColorToken.colorsToString(metricColor)
+            color: ColorToken.colorsToString(metricColor),
+            target: Int(metricGoal),
+            hasTarget: isGoalTurnedOn
         )
         modelContext.insert(newMetric)
         

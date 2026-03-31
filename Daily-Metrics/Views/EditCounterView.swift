@@ -23,8 +23,11 @@ struct EditCounterView: View {
     // Metric values
     @State private var initialValue: String = ""
     @State private var incrementBy: String = ""
+    @State private var metricGoal: String = ""
     
     @FocusState private var isTextFieldFocused: Bool
+    
+    @State private var isGoalTurnedOn: Bool = false
     
     // Environment variable to dismiss sheet.
     @Environment(\.dismiss) var dismiss
@@ -38,6 +41,8 @@ struct EditCounterView: View {
         _initialValue = State(initialValue: "\(metric.value)")
         _incrementBy = State(initialValue: "\(metric.increment)") 
         _metricColor = State(initialValue: ColorToken.stringToColor(metric.color ?? "counterBlue"))
+        _isGoalTurnedOn = State(initialValue: metric.hasTarget ?? false)
+        _metricGoal = State(initialValue: "\(metric.target ?? 0)")
     }
     
     var body: some View {
@@ -69,6 +74,29 @@ struct EditCounterView: View {
                     Text(DMStrings.colorSectionHeader)
                 } footer: {
                     Text(DMStrings.colorSectionFooter)
+                }
+                
+                // Goals section.
+                Section {
+                    VStack(spacing: 16) {
+                        if isGoalTurnedOn {
+                            Toggle(isOn: $isGoalTurnedOn) {
+                                Text("Goal")
+                            }
+                            
+                            Divider()
+                            goalsTextField
+                        } else {
+                            Toggle(isOn: $isGoalTurnedOn) {
+                                Text("Goal")
+                            }
+                            
+                            if isGoalTurnedOn {
+                                Divider()
+                                goalsTextField
+                            }
+                        }
+                    }
                 }
             }
             .scrollDismissesKeyboard(.interactively)
@@ -131,11 +159,18 @@ struct EditCounterView: View {
             .foregroundColor(.primary)
     }
     
+    private var goalsTextField: some View {
+        TextField("Set goal for counter", text: $metricGoal)
+            .keyboardType(.numberPad)
+    }
+    
     private func updateMetric(_ metric: Metric) {
         metric.name = metricName
         metric.value = Int(initialValue) ?? metric.value
         metric.increment = Int(incrementBy) ?? metric.increment
         metric.color = ColorToken.colorsToString(metricColor)
+        metric.target = Int(metricGoal) ?? metric.target
+        metric.hasTarget = isGoalTurnedOn
         
         do {
             try modelContext.save()
