@@ -9,6 +9,7 @@ import AVFoundation
 import Foundation
 import SwiftUI
 import SwiftData
+import StoreKit
 
 // MARK: - Metric card.
 
@@ -259,6 +260,31 @@ public struct MetricCard: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                 dismissGoalSuccessView = true
             }
+            requestReviewIfNeeded()
+        }
+    }
+    
+    func requestReviewIfNeeded() {
+        let countKey = "reviewPromptCount"
+        let ratedKey = "hasRated"
+        
+        // Stop prompting if they've already rated
+        guard !UserDefaults.standard.bool(forKey: ratedKey) else { return }
+        
+        let count = UserDefaults.standard.integer(forKey: countKey) + 1
+        UserDefaults.standard.set(count, forKey: countKey)
+        
+        if [3, 10, 30].contains(count) {
+            requestReview()
+        }
+    }
+
+    
+    private func requestReview() {
+        if let scene = UIApplication.shared.connectedScenes.first(where: {
+            $0.activationState == .foregroundActive
+        }) as? UIWindowScene {
+            SKStoreReviewController.requestReview(in: scene)
         }
     }
 }
