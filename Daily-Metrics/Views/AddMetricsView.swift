@@ -74,10 +74,11 @@ struct AddMetricsView: View {
                     Text(DMStrings.colorSectionFooter)
                 }
                 
+                // Goals section.
                 Section {
                     VStack(spacing: 16) {
                         Toggle(isOn: $isGoalTurnedOn) {
-                            Text("Goal")
+                            Text(DMStrings.goalText)
                         }
                         
                         if isGoalTurnedOn {
@@ -85,6 +86,10 @@ struct AddMetricsView: View {
                             goalsTextField
                         }
                     }
+                } header: {
+                    Text("")
+                } footer: {
+                    Text(DMStrings.goalSectionFooter)
                 }
             }
             .scrollDismissesKeyboard(.interactively)
@@ -143,7 +148,7 @@ struct AddMetricsView: View {
     }
     
     private var goalsTextField: some View {
-        TextField("Set goal for counter", text: $metricGoal)
+        TextField("0", text: $metricGoal)
             .keyboardType(.numberPad)
     }
     

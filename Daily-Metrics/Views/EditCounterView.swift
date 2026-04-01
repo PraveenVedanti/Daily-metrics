@@ -81,14 +81,14 @@ struct EditCounterView: View {
                     VStack(spacing: 16) {
                         if isGoalTurnedOn {
                             Toggle(isOn: $isGoalTurnedOn) {
-                                Text("Goal")
+                                Text(DMStrings.goalText)
                             }
                             
                             Divider()
                             goalsTextField
                         } else {
                             Toggle(isOn: $isGoalTurnedOn) {
-                                Text("Goal")
+                                Text(DMStrings.goalText)
                             }
                             
                             if isGoalTurnedOn {
@@ -97,6 +97,10 @@ struct EditCounterView: View {
                             }
                         }
                     }
+                } header: {
+                    Text("")
+                } footer: {
+                    Text(DMStrings.goalSectionFooter)
                 }
             }
             .scrollDismissesKeyboard(.interactively)
