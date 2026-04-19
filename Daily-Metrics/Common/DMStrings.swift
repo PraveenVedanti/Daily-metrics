@@ -24,6 +24,8 @@ struct DMStrings {
     static let metricNameTextFieldPlaceholder = NSLocalizedString("Counter name (Required)", comment: "Counter name text field placeholder")
     static let newCounterTitle = NSLocalizedString("New Counter", comment: "New counter navigation title")
     static let counterValueTextFiledHeader = NSLocalizedString("Counter value", comment: "Counter value text field header")
+    static let goalSectionFooter = NSLocalizedString("Set goals for your counter and track progress", comment: "goal section header")
+    static let goalText = NSLocalizedString("Goal", comment: "Goal text")
     
     // Edit counter view
     static let counterCurrentValueHeader = NSLocalizedString("Current value", comment: "Counter current value text")
@@ -57,6 +59,11 @@ struct DMStrings {
     static let emptyStateHint = NSLocalizedString(
         "You can also tap + in the top right",
         comment: "Hint explaining how to add a new counter"
+    )
+    
+    static let goalAchieved = NSLocalizedString(
+        "Goal achieved!",
+        comment: "Goal achieved text"
     )
     
     // Settings view
@@ -93,6 +100,7 @@ struct DMIcons {
     static let minus = "minus"
     static let handDraw = "hand.tap"
     static let crossMark = "xmark"
+    static let crossMarkFill = "xmark.circle.fill"
     static let trash = "trash"
     static let reset = "arrow.counterclockwise"
     static let edit = "pencil"
@@ -104,5 +112,6 @@ struct DMIcons {
     static let checkMark = "checkmark"
     static let clock = "clock"
     static let rightArrow = "arrow.right"
+    static let checkMarkFill = "checkmark.circle.fill"
     static let search = "magnifyingglass"
 }

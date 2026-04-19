@@ -17,6 +17,8 @@ final class Metric {
     var increment: Int
     var color: String?
     var createdAt: Date
+    var target: Int?
+    var hasTarget: Bool?
     
     var sortOrder: Int = 0
     
@@ -27,13 +29,17 @@ final class Metric {
         name: String,
         value: Int = 0,
         increment: Int = 1,
-        color: String? = "counterBlue"
+        color: String? = "counterBlue",
+        target: Int? = nil,
+        hasTarget: Bool? = false
     ) {
         self.id = UUID()
         self.name = name
         self.value = value
         self.increment = increment
         self.color = color
+        self.target = target
+        self.hasTarget = hasTarget
         self.createdAt = Date()
     }
 }

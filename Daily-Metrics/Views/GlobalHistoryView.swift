@@ -34,8 +34,13 @@ struct GlobalHistoryView: View {
     
     // Filtered history list of counters
     var filteredHistory: [HistoryEntry] {
-        guard let selected = selectedCounter else { return allHistory }
-        return allHistory.filter { $0.metric?.name == selected }
+        let calendar = Calendar.current
+        let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: Date())!
+        
+        let base = allHistory.filter { $0.timestamp >= sevenDaysAgo }
+        
+        guard let selected = selectedCounter else { return base }
+        return base.filter { $0.metric?.name == selected }
     }
     
     var groupedHistory: [(title: String, entries: [HistoryEntry])] {
