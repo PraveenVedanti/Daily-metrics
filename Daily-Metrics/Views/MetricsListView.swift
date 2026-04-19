@@ -37,6 +37,12 @@ struct MetricsListView: View {
     // Metric to be reset state variable
     @State private var metricToReset: Metric? = nil
     
+    // Search text.
+    @State private var searchText = ""
+    
+    // State variable to see if searching.
+    @State private var isSearching = false
+    
     // Model context for local data.
     @Environment(\.modelContext) private var modelContext
     
@@ -50,12 +56,19 @@ struct MetricsListView: View {
         NavigationStack {
             homeContent
                 .navigationTitle(metrics.isEmpty ? "" : "Counters")
+                .searchableIfNeeded(text: $searchText, isPresented: $isSearching)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                       addMetricsButton
+                        HStack(spacing: 32) {
+                            if !metrics.isEmpty {
+                                searchButton
+                            }
+                            addMetricsButton
+                        }
+                        .padding(.horizontal, 8)
                     }
                     ToolbarItem(placement: .topBarLeading) {
-                        if !metrics.isEmpty {
+                        if !metrics.isEmpty && !isSearching {
                             EditButton()
                         }
                     }
@@ -129,7 +142,7 @@ struct MetricsListView: View {
     private var listContent: some View {
         ZStack(alignment: .bottom) {
             List {
-                ForEach(metrics) { metric in
+                ForEach(filteredMetrics) { metric in
                     MetricCard(metric: metric)
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 6))
@@ -166,6 +179,7 @@ struct MetricsListView: View {
                         }
                 }
                 .onMove { from, to in
+                    guard searchText.isEmpty else { return }
                     var reordered = metrics
                     reordered.move(fromOffsets: from, toOffset: to)
                     for (index, metric) in reordered.enumerated() {
@@ -200,6 +214,11 @@ struct MetricsListView: View {
                 Button(DMStrings.cancelButtonTitle, role: .cancel) { }
             } message: {
                 Text(DMStrings.resetCounterAlertMessage)
+            }
+            
+            // Search unavailable view.
+            if !searchText.isEmpty && filteredMetrics.isEmpty {
+                ContentUnavailableView.search(text: searchText)
             }
 
             // Swipe Tip
@@ -284,6 +303,26 @@ struct MetricsListView: View {
         .accessibilityHint("Creates a new counter")
     }
     
+    private var searchButton: some View {
+        Button {
+            withAnimation {
+                isSearching = true
+            }
+        } label: {
+            Image(systemName: DMIcons.search)
+                .accessibilityHidden(true)
+        }
+    }
+    
+    var filteredMetrics: [Metric] {
+        if searchText.trimmingCharacters(in: .whitespaces).isEmpty {
+            return metrics
+        }
+        return metrics.filter {
+            $0.name.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+    
     private func deleteMetric(_ metric: Metric) {
         modelContext.delete(metric)
         do {
@@ -349,5 +388,21 @@ struct SwipeTipView: View {
                 .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
         )
         .padding(.horizontal, 16)
+    }
+}
+
+
+extension View {
+    @ViewBuilder
+    func searchableIfNeeded(text: Binding<String>, isPresented: Binding<Bool>) -> some View {
+        if isPresented.wrappedValue {
+            self.searchable(
+                text: text,
+                isPresented: isPresented,
+                placement: .navigationBarDrawer(displayMode: .always)
+            )
+        } else {
+            self
+        }
     }
 }

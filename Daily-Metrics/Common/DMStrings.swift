@@ -104,4 +104,5 @@ struct DMIcons {
     static let checkMark = "checkmark"
     static let clock = "clock"
     static let rightArrow = "arrow.right"
+    static let search = "magnifyingglass"
 }
