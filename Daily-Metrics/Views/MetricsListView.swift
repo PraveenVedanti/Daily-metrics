@@ -319,7 +319,8 @@ struct MetricsListView: View {
             return metrics
         }
         return metrics.filter {
-            $0.name.localizedCaseInsensitiveContains(searchText)
+            $0.name.localizedCaseInsensitiveContains(searchText) ||
+            $0.desc?.localizedCaseInsensitiveContains(searchText) == true
         }
     }
     

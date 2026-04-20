@@ -10,6 +10,12 @@ import SwiftUI
 import StoreKit
 
 struct SettingsView: View {
+    
+// Alert shown before history clear.
+@State private var showClearHistoryAlert = false
+ 
+// Alert shown before all counter clear.
+@State private var showClearAllCounterAlert = false
 
 // MARK: - App Storage
 @AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = false
@@ -20,9 +26,7 @@ struct SettingsView: View {
     
 // All history
 @Query var allHistory: [HistoryEntry]
-    
-// Alert shown before history clear.
-@State private var showClearHistoryAlert = false
+
 
 // MARK: - Constants
 private let contactEmail = "praveen.apps@yahoo.com"
@@ -44,16 +48,6 @@ var body: some View {
                 }
             }
             
-            // MARK: Data
-            Section(DMStrings.dataSectionHeader) {
-                Button(role: .destructive) {
-                    showClearHistoryAlert = true
-                } label: {
-                    Label(DMStrings.clearHistoryText, systemImage: DMIcons.trash)
-                        .foregroundColor(allHistory.isEmpty ? .secondary : .red)
-                }
-            }
-            
             // MARK: Support
             Section(DMStrings.supportSectionHeader) {
                 Button {
@@ -68,6 +62,25 @@ var body: some View {
                 } label: {
                     Label(DMStrings.feedbacktext, systemImage: DMIcons.envelope)
                         .foregroundColor(.primary)
+                }
+            }
+            
+            // MARK: Reset
+            Section(DMStrings.dataSectionHeader) {
+                // Clear history
+                Button(role: .destructive) {
+                    showClearHistoryAlert = true
+                } label: {
+                    Label(DMStrings.clearHistoryText, systemImage: DMIcons.trash)
+                        .foregroundColor(allHistory.isEmpty ? .secondary : .orange)
+                }
+                
+                // Delete all counters
+                Button(role: .destructive) {
+                    showClearAllCounterAlert = true
+                } label: {
+                    Label(DMStrings.deleteCountersTitle, systemImage: DMIcons.warning)
+                        .foregroundColor(.red)
                 }
             }
             
@@ -92,6 +105,13 @@ var body: some View {
             Button(DMStrings.cancelButtonTitle, role: .cancel) { }
         } message: {
             Text(DMStrings.clearHistoryAlertMessage)
+        }.alert(DMStrings.deleteCountersAlertTitle, isPresented: $showClearAllCounterAlert) {
+            Button(DMStrings.deleteAllButtonTitle, role: .destructive) {
+                deleteAllMetrics()
+            }
+            Button(DMStrings.cancelButtonTitle, role: .cancel) { }
+        } message: {
+            Text(DMStrings.deleteCountersAlertMessage)
         }
     }
 }
@@ -128,5 +148,14 @@ var body: some View {
             modelContext.delete($0)
         }
         try? modelContext.save()
+    }
+    
+    private func deleteAllMetrics() {
+        do {
+            try modelContext.delete(model: Metric.self)
+            try modelContext.save()
+        } catch {
+            print("Failed to delete all metrics: \(error)")
+        }
     }
 }

@@ -22,6 +22,7 @@ struct DMStrings {
     static let colorSectionFooter = NSLocalizedString("Choose a color for your counter", comment: "Color section footer")
     
     static let metricNameTextFieldPlaceholder = NSLocalizedString("Counter name (Required)", comment: "Counter name text field placeholder")
+    static let metricDescTextFieldPlaceholder = NSLocalizedString("Description (Optional)", comment: "Counter description text field placeholder")
     static let newCounterTitle = NSLocalizedString("New Counter", comment: "New counter navigation title")
     static let counterValueTextFiledHeader = NSLocalizedString("Counter value", comment: "Counter value text field header")
     static let goalSectionFooter = NSLocalizedString("Set goals for your counter and track progress", comment: "goal section header")
@@ -70,16 +71,20 @@ struct DMStrings {
     static let settingsNavigationTitle = NSLocalizedString("Settings", comment: "New counter title")
     static let clearHistoryAlertTitle = NSLocalizedString("Clear All History", comment: "Clear history title")
     static let feedbackSectionHeader = NSLocalizedString("Feedback", comment: "Feedback header title")
-    static let dataSectionHeader = NSLocalizedString("Data", comment: "Data header title")
+    static let dataSectionHeader = NSLocalizedString("Reset", comment: "Data header title")
     static let supportSectionHeader = NSLocalizedString("Support", comment: "Support header title")
     static let clearHistoryAlertMessage = NSLocalizedString("This will permanently delete all history data", comment: "Clear history alert title")
     static let hapticsText = NSLocalizedString("Haptics", comment: "Haptics title")
     static let soundsText = NSLocalizedString("Sounds", comment: "Sounds title")
-    static let clearHistoryText = NSLocalizedString("Clear All History", comment: "clear history title")
+    static let clearHistoryText = NSLocalizedString("Clear  all  history", comment: "clear history title")
     static let rateTheAppText = NSLocalizedString("Rate the App", comment: "rate the app title")
     static let feedbacktext = NSLocalizedString("Contact / Feedback", comment: "contact title")
     static let versionText = NSLocalizedString("Version", comment: "version title")
     static let clearButtonTitle = NSLocalizedString("Clear", comment: "clear button title")
+    static let deleteCountersTitle = NSLocalizedString("Delete  all  counters", comment: "delete counters button")
+    static let deleteCountersAlertTitle = NSLocalizedString("Delete all counters?", comment: "delete counters alert title")
+    static let deleteAllButtonTitle = NSLocalizedString("Delete all", comment: "Delete all button title")
+    static let deleteCountersAlertMessage = NSLocalizedString("This will permanently delete all counters and their history. This cannot be undone.", comment: "delete counters alert message")
     
     // History view
     static let emptyHistoryTitle = NSLocalizedString(
@@ -114,4 +119,5 @@ struct DMIcons {
     static let rightArrow = "arrow.right"
     static let checkMarkFill = "checkmark.circle.fill"
     static let search = "magnifyingglass"
+    static let warning = "exclamationmark.triangle"
 }
