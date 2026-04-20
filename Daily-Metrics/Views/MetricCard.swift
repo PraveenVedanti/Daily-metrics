@@ -111,11 +111,21 @@ public struct MetricCard: View {
     
     private var metricTitleView: some View {
         HStack {
-            Text(metric.name)
-                .font(.caption.bold())
-                .kerning(1.5)
-                .foregroundStyle(metricColor)
-                .lineLimit(1)
+            VStack {
+                Text(metric.name)
+                    .font(.subheadline)
+                    .kerning(1.5)
+                    .foregroundStyle(metricColor)
+                    .lineLimit(1)
+                
+                if let description = metric.desc {
+                    Text(description)
+                        .font(.caption2)
+                        .kerning(1.5)
+                        .foregroundStyle(metricColor)
+                        .lineLimit(1)
+                }
+            }
             
             if isCompleted() {
                 Image(systemName: DMIcons.checkMarkFill)

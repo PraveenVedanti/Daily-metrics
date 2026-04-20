@@ -22,6 +22,7 @@ struct DMStrings {
     static let colorSectionFooter = NSLocalizedString("Choose a color for your counter", comment: "Color section footer")
     
     static let metricNameTextFieldPlaceholder = NSLocalizedString("Counter name (Required)", comment: "Counter name text field placeholder")
+    static let metricDescTextFieldPlaceholder = NSLocalizedString("Description (Optional)", comment: "Counter description text field placeholder")
     static let newCounterTitle = NSLocalizedString("New Counter", comment: "New counter navigation title")
     static let counterValueTextFiledHeader = NSLocalizedString("Counter value", comment: "Counter value text field header")
     static let goalSectionFooter = NSLocalizedString("Set goals for your counter and track progress", comment: "goal section header")

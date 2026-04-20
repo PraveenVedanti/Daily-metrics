@@ -16,6 +16,9 @@ struct AddMetricsView: View {
     // Metric name
     @State private var metricName: String = ""
     
+    // Metric description.
+    @State private var metricDesc: String = ""
+    
     // Metric values.
     @State private var initialValue: String = "0"
     @State private var incrementBy: String = "1"
@@ -41,6 +44,7 @@ struct AddMetricsView: View {
                 // Counter name section
                 Section {
                     metricNameTextField
+                    metricDescTextField
                 }
                 
                 // Initial value section
@@ -137,6 +141,10 @@ struct AddMetricsView: View {
             .focused($isTextFieldFocused)
     }
     
+    private var metricDescTextField: some View {
+        TextField(DMStrings.metricDescTextFieldPlaceholder, text: $metricDesc)
+    }
+    
     private var initialValueTextField: some View {
         TextField("0", text: $initialValue)
             .keyboardType(.numberPad)
@@ -169,6 +177,7 @@ struct AddMetricsView: View {
             increment: incrementByInt,
             color: ColorToken.colorsToString(metricColor),
             target: Int(metricGoal),
+            desc: metricDesc,
             hasTarget: isGoalTurnedOn
         )
         modelContext.insert(newMetric)

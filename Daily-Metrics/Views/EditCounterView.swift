@@ -20,6 +20,9 @@ struct EditCounterView: View {
     // Metric name and descriptions.
     @State private var metricName: String = ""
     
+    // Metric description.
+    @State private var metricDesc: String = ""
+    
     // Metric values
     @State private var initialValue: String = ""
     @State private var incrementBy: String = ""
@@ -38,6 +41,7 @@ struct EditCounterView: View {
     init(metric: Metric) {
         self.metric = metric
         _metricName = State(initialValue: metric.name)
+        _metricDesc = State(initialValue: metric.desc ?? "")
         _initialValue = State(initialValue: "\(metric.value)")
         _incrementBy = State(initialValue: "\(metric.increment)") 
         _metricColor = State(initialValue: ColorToken.stringToColor(metric.color ?? "counterBlue"))
@@ -52,6 +56,7 @@ struct EditCounterView: View {
                 // Counter name section
                 Section {
                     metricNameTextField
+                    metricDesTextField
                 }
                 
                 // Counter value section
@@ -149,6 +154,13 @@ struct EditCounterView: View {
             .textInputAutocapitalization(.words)
     }
     
+    private var metricDesTextField: some View {
+        TextField("\(metric.desc ?? DMStrings.metricDescTextFieldPlaceholder)", text: $metricDesc)
+            .textFieldStyle(.automatic)
+            .foregroundColor(.primary)
+            .textInputAutocapitalization(.words)
+    }
+    
     private var initialValueTextField: some View {
         TextField("\(metric.value)", text: $initialValue)
             .keyboardType(.numberPad)
@@ -170,6 +182,7 @@ struct EditCounterView: View {
     
     private func updateMetric(_ metric: Metric) {
         metric.name = metricName
+        metric.desc = metricDesc
         metric.value = Int(initialValue) ?? metric.value
         metric.increment = Int(incrementBy) ?? metric.increment
         metric.color = ColorToken.colorsToString(metricColor)
