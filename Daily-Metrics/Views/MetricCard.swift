@@ -118,7 +118,7 @@ public struct MetricCard: View {
                     .foregroundStyle(metricColor)
                     .lineLimit(1)
                 
-                if let description = metric.desc {
+                if let description = metric.desc, description != "" {
                     Text(description)
                         .font(.caption2)
                         .kerning(1.5)

@@ -29,7 +29,7 @@ struct SettingsView: View {
 
 
 // MARK: - Constants
-private let contactEmail = "praveen.apps@yahoo.com"
+private let contactEmail = "praveenkumarvedanti@gmail.com"
 
 var body: some View {
     NavigationStack {

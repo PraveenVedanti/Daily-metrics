@@ -154,11 +154,21 @@ struct EditCounterView: View {
             .textInputAutocapitalization(.words)
     }
     
+    @ViewBuilder
     private var metricDesTextField: some View {
-        TextField("\(metric.desc ?? DMStrings.metricDescTextFieldPlaceholder)", text: $metricDesc)
-            .textFieldStyle(.automatic)
-            .foregroundColor(.primary)
-            .textInputAutocapitalization(.words)
+        if let desc = metric.desc {
+            if desc == "" {
+                TextField(DMStrings.metricDescTextFieldPlaceholder, text: $metricDesc)
+                    .textFieldStyle(.automatic)
+                    .foregroundColor(.primary)
+                    .textInputAutocapitalization(.words)
+            } else {
+                TextField("\(String(describing: metric.desc))", text: $metricDesc)
+                    .textFieldStyle(.automatic)
+                    .foregroundColor(.primary)
+                    .textInputAutocapitalization(.words)
+            }
+        }
     }
     
     private var initialValueTextField: some View {
